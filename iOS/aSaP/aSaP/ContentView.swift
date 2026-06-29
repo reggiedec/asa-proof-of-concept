@@ -9,25 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedTab = 0
-    
-    /// Basic function used to create the nav bar
-    /// - Parameter name: name of the tab it represents
-    /// - Returns: basic starter view w/ custom name
-    func tempView(name: String) -> some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("\(name)")
-        }
-        .padding()
-    }
-    
+
     var body: some View {
         TabView(selection: $selectedTab) {
             // MARK: Home
             NavigationStack {
-                tempView(name: "Home") // TODO: Replace w/ actual page once created
+                HomeView()
                     .navigationTitle(Text("Home")) // Top header if wanted
             }
             .tabItem {
@@ -36,7 +23,7 @@ struct ContentView: View {
             
             // MARK: Inventory
             NavigationStack {
-                tempView(name: "Inventory") // TODO: Replace w/ actual page once created
+                InventoryView()
             }
             .tabItem {
                 Label("Inventory", systemImage: "shippingbox.fill")
@@ -44,7 +31,7 @@ struct ContentView: View {
             
             // MARK: Fabrication
             NavigationStack {
-                tempView(name: "Fabrication") // TODO: Replace w/ actual page once created
+                FabricationView()
             }
             .tabItem {
                 Label("Fabrication", systemImage: "scissors")
@@ -52,7 +39,7 @@ struct ContentView: View {
             
             // MARK: Shipping
             NavigationStack {
-                tempView(name: "Shipping") // TODO: Replace w/ actual page once created
+               ShippingView()
             }
             .tabItem {
                 Label("Shipping", systemImage: "truck.box.fill")
@@ -60,7 +47,7 @@ struct ContentView: View {
             
             // MARK: Financials
             NavigationStack {
-                tempView(name: "Financials") // TODO: Replace w/ actual page once created
+                FinancialsView()
             }
             .tabItem {
                 Label("Financials", systemImage: "dollarsign")
