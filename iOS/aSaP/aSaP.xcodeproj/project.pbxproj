@@ -29,9 +29,38 @@
 		68F04F242FF2EE7D0035C8E6 /* aSaPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = aSaPUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		68F050002FF43CA20035C8E6 /* Exceptions for "aSaPUITests" folder in "aSaPTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				aSaPUITests.swift,
+				aSaPUITestsLaunchTests.swift,
+			);
+			target = 68F04F192FF2EE7D0035C8E6 /* aSaPTests */;
+		};
+		68F050012FF43CA20035C8E6 /* Exceptions for "aSaPUITests" folder in "aSaPUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				aSaPUITests.swift,
+				aSaPUITestsLaunchTests.swift,
+			);
+			target = 68F04F232FF2EE7D0035C8E6 /* aSaPUITests */;
+		};
+		68F050032FF43D810035C8E6 /* Exceptions for "aSaP" folder in "aSaP" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 68F04F0C2FF2EE7C0035C8E6 /* aSaP */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		68F04F0F2FF2EE7C0035C8E6 /* aSaP */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				68F050032FF43D810035C8E6 /* Exceptions for "aSaP" folder in "aSaP" target */,
+			);
 			path = aSaP;
 			sourceTree = "<group>";
 		};
@@ -40,8 +69,12 @@
 			path = aSaPTests;
 			sourceTree = "<group>";
 		};
-		68F04F272FF2EE7D0035C8E6 /* aSaPUITests */ = {
+		68F04FFD2FF43CA20035C8E6 /* aSaPUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				68F050002FF43CA20035C8E6 /* Exceptions for "aSaPUITests" folder in "aSaPTests" target */,
+				68F050012FF43CA20035C8E6 /* Exceptions for "aSaPUITests" folder in "aSaPUITests" target */,
+			);
 			path = aSaPUITests;
 			sourceTree = "<group>";
 		};
@@ -76,8 +109,8 @@
 			isa = PBXGroup;
 			children = (
 				68F04F0F2FF2EE7C0035C8E6 /* aSaP */,
+				68F04FFD2FF43CA20035C8E6 /* aSaPUITests */,
 				68F04F1D2FF2EE7D0035C8E6 /* aSaPTests */,
-				68F04F272FF2EE7D0035C8E6 /* aSaPUITests */,
 				68F04F0E2FF2EE7C0035C8E6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -132,6 +165,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				68F04F1D2FF2EE7D0035C8E6 /* aSaPTests */,
+				68F04FFD2FF43CA20035C8E6 /* aSaPUITests */,
 			);
 			name = aSaPTests;
 			packageProductDependencies = (
@@ -152,9 +186,6 @@
 			);
 			dependencies = (
 				68F04F262FF2EE7D0035C8E6 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				68F04F272FF2EE7D0035C8E6 /* aSaPUITests */,
 			);
 			name = aSaPUITests;
 			packageProductDependencies = (
@@ -400,6 +431,7 @@
 				DEVELOPMENT_TEAM = J94522R3MW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = aSaP/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +464,7 @@
 				DEVELOPMENT_TEAM = J94522R3MW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = aSaP/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
