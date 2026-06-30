@@ -30,7 +30,7 @@ struct ReorderableList<Item: WidgetProtocol>: View {
     PreviewContainer()
 }
 
-private struct PreviewContainer: View {
+struct PreviewContainer: View {
     @State private var widgets = WidgetList(items: [
         ExampleWidget(name: "TEST_One", isFavorite: false),
         ExampleWidget(name: "TEST_Two", isFavorite: false),
