@@ -18,6 +18,7 @@ struct ExampleWidget: WidgetProtocol {
         VStack {
             Text("\(name)")
                 .frame(maxWidth: .infinity, alignment: .center)
+                .font(Font.custom("BeVietnamPro-Regular", size: 18))
         }
     }
 }

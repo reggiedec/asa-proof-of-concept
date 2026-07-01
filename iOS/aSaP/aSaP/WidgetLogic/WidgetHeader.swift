@@ -110,7 +110,7 @@ struct WidgetHeader: View {
             dragIndicator()
                 .padding(.leading, leftPadding)
             Text(title)
-                .font(.title3)
+                .font(Font.custom("BeVietnamPro-Regular", size: 18))
                 .bold()
             
             Spacer()
@@ -125,7 +125,7 @@ struct WidgetHeader: View {
     
     VStack {
         WidgetHeader(widget: ExampleWidget(name: "TEST_One", isFavorite: false), title: "Testing Title")
-        WidgetHeader(widget: ExampleWidget(name: "TEST_Two", isFavorite: false), title: "Testing even longer title")
+        WidgetHeader(widget: ExampleWidget(name: "TEST_Two", isFavorite: false), title: "Testing an even longer title")
     }
     .environment(appState)
 }
