@@ -21,16 +21,4 @@ class WidgetList {
     func move(from source: IndexSet, to destination: Int) {
         items.move(fromOffsets: source, toOffset: destination)
     }
-    
-    func getBinding(for item: any WidgetProtocol) -> Binding<Bool> {
-        if let index = items.firstIndex(where: { $0.id == item.id }) { // should be safe overall outside of edge cases
-            return Binding(
-                get: { self.items[index].isFavorite },
-                set: { self.items[index].isFavorite = $0 }
-            )
-        } else {
-            // no binding found or (maybe) 1+ isntances of item
-            return .constant(false)
-        }
-    }
 }

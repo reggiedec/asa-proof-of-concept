@@ -16,7 +16,7 @@ struct ReorderableList: View {
         List {
             ForEach(widgets.items, id: \.id) { item in
                 VStack {
-                    WidgetHeader(isFavorite: widgets.getBinding(for: item), widget: item, title: item.name)
+                    WidgetHeader(widget: item, title: item.name)
                     AnyView(item.body)
                 }
             }

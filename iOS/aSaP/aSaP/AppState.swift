@@ -12,14 +12,17 @@ import Observation
 class AppState {
     var pageList: [String: WidgetList]
     
+    var favoriteIDs: Set<UUID>
+    
     var favoriteList: WidgetList {
-        let favorites = pageList.values.flatMap { $0.items.filter(\.isFavorite) } // "Flattens" the dictionary to a list only containing favorited items
+        let favorites = pageList.values.flatMap{ $0.items }.filter { favoriteIDs.contains($0.id) }  // "Flattens" the dictionary to a list only containing favorited items
         
         return .init(items: favorites)
     }
     
     init() {
         // Should change later when using mock data
+        // Pages
         pageList = [
             AppVariables.PageKeys.inv : .init(items: []),
             AppVariables.PageKeys.fab : .init(items: []),
@@ -30,6 +33,8 @@ class AppState {
                 ExampleWidget(name: "TEST_Thr", isFavorite: false)
             ]),
         ]
+        // Favorites (read to get this)
+        favoriteIDs = []
     }
     
     func list(for page: String) -> WidgetList {

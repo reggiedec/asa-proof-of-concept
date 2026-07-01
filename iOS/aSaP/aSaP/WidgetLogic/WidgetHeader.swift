@@ -12,7 +12,6 @@ import SwiftUI
 struct WidgetHeader: View {
     @Environment(AppState.self) private var appState
     /// If adjusting sizing, attempt to only alter the variables directly accessible here
-    @Binding var isFavorite: Bool
     var widget: any WidgetProtocol
     var title: String
     // Margin Padding
@@ -54,16 +53,20 @@ struct WidgetHeader: View {
         
         return Button {
             // TODO: Check if this is working
-            isFavorite.toggle()
             // need to unfavorite both in the favorites tab and in individual one
+            if appState.favoriteIDs.contains(widget.id) {
+                appState.favoriteIDs.remove(widget.id)
+            } else {
+                appState.favoriteIDs.insert(widget.id)
+            }
         } label: {
-            Image(systemName: isFavorite ? "star.fill" : "star")
+            Image(systemName: appState.favoriteIDs.contains(widget.id) ? "star.fill" : "star")
                 .resizable()
                 .padding(favButtonPadding)
-                .foregroundStyle(isFavorite ? favStarColor : unfavStarColor)
+                .foregroundStyle(appState.favoriteIDs.contains(widget.id) ? favStarColor : unfavStarColor)
                 .overlay {
                     Circle()
-                        .foregroundStyle(isFavorite ? favCircleColor : unfavCircleColor)
+                        .foregroundStyle(appState.favoriteIDs.contains(widget.id) ? favCircleColor : unfavCircleColor)
                 }
                 .frame(width: favButtonSize, height: favButtonSize)
         }
@@ -117,13 +120,11 @@ struct WidgetHeader: View {
 }
 
 #Preview {
-    @Previewable @State var favorited: Bool = true
-    @Previewable @State var unfav: Bool = false
     @Previewable @State var appState = AppState()
     
     VStack {
-        WidgetHeader(isFavorite: $favorited, widget: ExampleWidget(name: "TEST_One", isFavorite: false), title: "Testing Title")
-        WidgetHeader(isFavorite: $unfav, widget: ExampleWidget(name: "TEST_Two", isFavorite: false), title: "Testing even longer title")
+        WidgetHeader(widget: ExampleWidget(name: "TEST_One", isFavorite: false), title: "Testing Title")
+        WidgetHeader(widget: ExampleWidget(name: "TEST_Two", isFavorite: false), title: "Testing even longer title")
     }
     .environment(appState)
 }
