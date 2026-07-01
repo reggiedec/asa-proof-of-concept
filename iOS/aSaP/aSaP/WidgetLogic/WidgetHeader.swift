@@ -15,7 +15,8 @@ struct WidgetHeader: View {
     var widget: any WidgetProtocol
     var title: String
     // Margin Padding
-    let horizontalPadding: CGFloat = 0
+    let leftPadding: CGFloat = 0
+    let rightPadding: CGFloat = 0
     // Function sizing variables
     let favButtonSize: CGFloat = 28
     let favButtonPadding: CGFloat = 6
@@ -52,8 +53,6 @@ struct WidgetHeader: View {
         )
         
         return Button {
-            // TODO: Check if this is working
-            // need to unfavorite both in the favorites tab and in individual one
             if appState.favoriteIDs.contains(widget.id) {
                 appState.favoriteIDs.remove(widget.id)
             } else {
@@ -64,12 +63,14 @@ struct WidgetHeader: View {
                 .resizable()
                 .padding(favButtonPadding)
                 .foregroundStyle(appState.favoriteIDs.contains(widget.id) ? favStarColor : unfavStarColor)
-                .overlay {
+                .background {
                     Circle()
                         .foregroundStyle(appState.favoriteIDs.contains(widget.id) ? favCircleColor : unfavCircleColor)
                 }
                 .frame(width: favButtonSize, height: favButtonSize)
         }
+        .contentShape(Circle())
+//        .frame(width: favButtonSize, height: favButtonSize)
     }
     
     
@@ -107,14 +108,14 @@ struct WidgetHeader: View {
     var body: some View {
         HStack {
             dragIndicator()
-                .padding(.leading, horizontalPadding)
+                .padding(.leading, leftPadding)
             Text(title)
                 .font(.title3)
                 .bold()
             
             Spacer()
             favoriteButton()
-                .padding(.trailing, horizontalPadding)
+                .padding(.trailing, rightPadding)
         }
     }
 }

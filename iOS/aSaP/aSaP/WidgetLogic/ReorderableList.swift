@@ -11,6 +11,11 @@ import SwiftUI
 ///  Store a WidgetList for each page, to add items to favorited, when favorite button is pushed append to the favorites WidigetList
 struct ReorderableList: View {
     @Bindable var widgets: WidgetList
+    // Variables
+    private let widgetCornerRadius: CGFloat = 24
+    private let horizontalPadding: CGFloat = 12
+    private let verticalPadding: CGFloat = 12
+    private let widgetGap: CGFloat = 12 // Does not match Figma, 24 felt way too big
     
     var body: some View {
         List {
@@ -19,10 +24,24 @@ struct ReorderableList: View {
                     WidgetHeader(widget: item, title: item.name)
                     AnyView(item.body)
                 }
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, horizontalPadding)
+                .padding(.vertical, verticalPadding)
+                .background(
+                    RoundedRectangle(cornerRadius: widgetCornerRadius)
+                        .fill(.white)
+                )
+                .padding(.vertical, widgetGap)
             }
             .onMove(perform: widgets.move)
         }
-//        .environment(\.editMode, .constant(.active)) // Produces three lines on the side of the item rather than desired 6 dots in top left
+        .scrollContentBackground(.hidden)
+        .buttonStyle(.borderless)
+        .background(Color("BackgroundColor")) // Changes the color for each page
+        
     }
 }
 
