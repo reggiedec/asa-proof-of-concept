@@ -10,8 +10,10 @@ import SwiftUI
 /// Header for the different widgets.
 /// Should only be called in ReorderableList
 struct WidgetHeader: View {
+    @Environment(AppState.self) private var appState
     /// If adjusting sizing, attempt to only alter the variables directly accessible here
     @Binding var isFavorite: Bool
+    var widget: any WidgetProtocol
     var title: String
     // Margin Padding
     let horizontalPadding: CGFloat = 0
@@ -53,6 +55,7 @@ struct WidgetHeader: View {
         return Button {
             // TODO: Check if this is working
             isFavorite.toggle()
+            // need to unfavorite both in the favorites tab and in individual one
         } label: {
             Image(systemName: isFavorite ? "star.fill" : "star")
                 .resizable()
@@ -116,6 +119,11 @@ struct WidgetHeader: View {
 #Preview {
     @Previewable @State var favorited: Bool = true
     @Previewable @State var unfav: Bool = false
-    WidgetHeader(isFavorite: $favorited, title: "Testing Title")
-    WidgetHeader(isFavorite: $unfav, title: "Testing even longer title")
+    @Previewable @State var appState = AppState()
+    
+    VStack {
+        WidgetHeader(isFavorite: $favorited, widget: ExampleWidget(name: "TEST_One", isFavorite: false), title: "Testing Title")
+        WidgetHeader(isFavorite: $unfav, widget: ExampleWidget(name: "TEST_Two", isFavorite: false), title: "Testing even longer title")
+    }
+    .environment(appState)
 }

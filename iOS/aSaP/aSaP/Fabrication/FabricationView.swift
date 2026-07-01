@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct FabricationView: View {
+    @Environment(AppState.self) private var appState
+    
     var body: some View {
-        Text("Hello, Fabrication!")
+        ReorderableList(widgets: appState.list(for: AppVariables.PageKeys.fab))
     }
 }
 
 #Preview {
+    @Previewable @State var appState = AppState()
+    
     FabricationView()
+        .environment(appState)
 }

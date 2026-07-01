@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(AppState.self) private var appState
+    
     var body: some View {
-        Text("Hello, Home!")
+        ReorderableList(widgets: appState.favoriteList)
     }
 }
 
 #Preview {
+    @Previewable @State var appState = AppState()
+    
     HomeView()
+        .environment(appState)
 }
