@@ -11,6 +11,7 @@ import SwiftUI
 /// Identifiable: Ensure all items have a unique ID
 /// Equatable: Allows stuff like this == that, or removeAll(where: )
 protocol WidgetProtocol: Identifiable, Equatable {
+    var id: UUID { get }
     var name: String { get }
     var isFavorite: Bool { get set }
     

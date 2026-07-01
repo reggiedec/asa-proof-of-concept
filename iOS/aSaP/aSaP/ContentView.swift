@@ -57,5 +57,8 @@ struct ContentView: View {
 }
 
 #Preview {
+    @Previewable @State var appState = AppState()
+    
     ContentView()
+        .environment(appState)
 }

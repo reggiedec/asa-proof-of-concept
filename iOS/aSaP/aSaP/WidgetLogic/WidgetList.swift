@@ -10,11 +10,11 @@ import Observation
 
 /// List object for each page that should allow for a dynamic favorites list
 @Observable
-class WidgetList<Item: WidgetProtocol> {
+class WidgetList {
     // Append items/remove items when adding to favorites or create a page
-    var items: [Item]
+    var items: [any WidgetProtocol]
     
-    init(items: [Item]) {
+    init(items: [any WidgetProtocol]) {
         self.items = items
     }
     

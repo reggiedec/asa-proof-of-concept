@@ -10,11 +10,13 @@ import SwiftUI
 /// Header for the different widgets.
 /// Should only be called in ReorderableList
 struct WidgetHeader: View {
+    @Environment(AppState.self) private var appState
     /// If adjusting sizing, attempt to only alter the variables directly accessible here
-    @Binding var isFavorite: Bool
+    var widget: any WidgetProtocol
     var title: String
     // Margin Padding
-    let horizontalPadding: CGFloat = 0
+    let leftPadding: CGFloat = 0
+    let rightPadding: CGFloat = 0
     // Function sizing variables
     let favButtonSize: CGFloat = 28
     let favButtonPadding: CGFloat = 6
@@ -51,19 +53,24 @@ struct WidgetHeader: View {
         )
         
         return Button {
-            // TODO: Check if this is working
-            isFavorite.toggle()
+            if appState.favoriteIDs.contains(widget.id) {
+                appState.favoriteIDs.remove(widget.id)
+            } else {
+                appState.favoriteIDs.insert(widget.id)
+            }
         } label: {
-            Image(systemName: isFavorite ? "star.fill" : "star")
+            Image(systemName: appState.favoriteIDs.contains(widget.id) ? "star.fill" : "star")
                 .resizable()
                 .padding(favButtonPadding)
-                .foregroundStyle(isFavorite ? favStarColor : unfavStarColor)
-                .overlay {
+                .foregroundStyle(appState.favoriteIDs.contains(widget.id) ? favStarColor : unfavStarColor)
+                .background {
                     Circle()
-                        .foregroundStyle(isFavorite ? favCircleColor : unfavCircleColor)
+                        .foregroundStyle(appState.favoriteIDs.contains(widget.id) ? favCircleColor : unfavCircleColor)
                 }
                 .frame(width: favButtonSize, height: favButtonSize)
         }
+        .contentShape(Circle())
+//        .frame(width: favButtonSize, height: favButtonSize)
     }
     
     
@@ -101,21 +108,24 @@ struct WidgetHeader: View {
     var body: some View {
         HStack {
             dragIndicator()
-                .padding(.leading, horizontalPadding)
+                .padding(.leading, leftPadding)
             Text(title)
                 .font(.title3)
                 .bold()
             
             Spacer()
             favoriteButton()
-                .padding(.trailing, horizontalPadding)
+                .padding(.trailing, rightPadding)
         }
     }
 }
 
 #Preview {
-    @Previewable @State var favorited: Bool = true
-    @Previewable @State var unfav: Bool = false
-    WidgetHeader(isFavorite: $favorited, title: "Testing Title")
-    WidgetHeader(isFavorite: $unfav, title: "Testing even longer title")
+    @Previewable @State var appState = AppState()
+    
+    VStack {
+        WidgetHeader(widget: ExampleWidget(name: "TEST_One", isFavorite: false), title: "Testing Title")
+        WidgetHeader(widget: ExampleWidget(name: "TEST_Two", isFavorite: false), title: "Testing even longer title")
+    }
+    .environment(appState)
 }

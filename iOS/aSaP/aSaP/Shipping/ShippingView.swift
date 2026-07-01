@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct ShippingView: View {
+    @Environment(AppState.self) private var appState
+    
     var body: some View {
-        Text("Hello, Shipping!")
+        ReorderableList(widgets: appState.list(for: AppVariables.PageKeys.ship))
     }
 }
 
 #Preview {
+    @Previewable @State var appState = AppState()
+    
     ShippingView()
+        .environment(appState)
 }

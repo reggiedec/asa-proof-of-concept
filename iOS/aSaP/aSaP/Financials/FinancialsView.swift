@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct FinancialsView: View {
+    @Environment(AppState.self) private var appState
+    
     var body: some View {
-        Text("Hello, Financials!")
+        ReorderableList(widgets: appState.list(for: AppVariables.PageKeys.fin))
     }
 }
 
 #Preview {
+    @Previewable @State var appState = AppState()
+    
     FinancialsView()
+        .environment(appState)
 }

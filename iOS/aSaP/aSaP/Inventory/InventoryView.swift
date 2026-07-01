@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct InventoryView: View {
+    @Environment(AppState.self) private var appState
+    
     var body: some View {
-        Text("Hello, Inventory!")
+        ReorderableList(widgets: appState.list(for: AppVariables.PageKeys.inv))
     }
 }
 
 #Preview {
+    @Previewable @State var appState = AppState()
+    
     InventoryView()
+        .environment(appState)
 }
