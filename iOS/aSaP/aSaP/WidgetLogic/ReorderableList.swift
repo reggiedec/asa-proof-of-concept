@@ -11,56 +11,79 @@ import SwiftUI
 ///  Store a WidgetList for each page, to add items to favorited, when favorite button is pushed append to the favorites WidigetList
 struct ReorderableList: View {
     @Bindable var widgets: WidgetList
+    @Binding var runTutorial: Bool
     // Variables
     private let widgetCornerRadius: CGFloat = 24
     private let horizontalPadding: CGFloat = 12
     private let verticalPadding: CGFloat = 12
     private let widgetGap: CGFloat = 12 // Does not match Figma, 24 felt way too big
     
-    var body: some View {
-        List {
-            ForEach(widgets.items, id: \.id) { item in
-                VStack {
-                    WidgetHeader(widget: item, title: item.name)
-                    AnyView(item.body)
-                }
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets())
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, horizontalPadding)
-                .padding(.vertical, verticalPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: widgetCornerRadius)
-                        .fill(.white)
-                )
-                .padding(.vertical, widgetGap)
-            }
-            .onMove(perform: widgets.move)
-        }
-        .scrollContentBackground(.hidden)
-        .buttonStyle(.borderless)
-        .background(Color("BackgroundColor")) // Changes the color for each page
+    init(widgets: WidgetList) {
+        self.widgets = widgets
+        self._runTutorial = Binding<Bool>.constant(false)
+    }
+    
+    init(widgets: WidgetList, runTutorial: Binding<Bool>) {
+        self.widgets = widgets
+        self._runTutorial = runTutorial
+    }
+    
+    private func generateView(item: any WidgetProtocol) -> some View {
+        let headerView: WidgetHeader
         
+        if runTutorial {
+            headerView = WidgetHeader(widget: item, title: item.name, runAnimation: $runTutorial)
+        } else {
+            headerView = WidgetHeader(widget: item, title: item.name)
+        }
+        
+        return VStack {
+            headerView
+            AnyView(item.body)
+        }
     }
-}
-
-#Preview {
-    @Previewable @State var appState = AppState()
-    
-    PreviewContainer()
-        .environment(appState)
-}
-
-struct PreviewContainer: View {
-    @State private var widgets = WidgetList(items: [
-        ExampleWidget(name: "TEST_One", isFavorite: false),
-        ExampleWidget(name: "TEST_Two", isFavorite: false),
-        ExampleWidget(name: "TEST_Thr", isFavorite: false),
-        ExampleWidget(name: "TEST_Fou", isFavorite: false)
-    ])
-    
-    var body: some View {
-        ReorderableList(widgets: widgets)
+        
+        var body: some View {
+            List {
+                ForEach(widgets.items, id: \.id) { item in
+                    generateView(item: item)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets())
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, horizontalPadding)
+                        .padding(.vertical, verticalPadding)
+                        .background(
+                            RoundedRectangle(cornerRadius: widgetCornerRadius)
+                                .fill(.white)
+                        )
+                        .padding(.vertical, widgetGap)
+                }
+                .onMove(perform: widgets.move)
+            }
+            .scrollContentBackground(.hidden)
+            .buttonStyle(.borderless)
+            .background(Color("BackgroundColor")) // Changes the color for each page
+            
+        }
     }
-}
+    
+    #Preview {
+        @Previewable @State var appState = AppState()
+        
+        PreviewContainer()
+            .environment(appState)
+    }
+    
+    struct PreviewContainer: View {
+        @State private var widgets = WidgetList(items: [
+            ExampleWidget(name: "TEST_One", isFavorite: false),
+            ExampleWidget(name: "TEST_Two", isFavorite: false),
+            ExampleWidget(name: "TEST_Thr", isFavorite: false),
+            ExampleWidget(name: "TEST_Fou", isFavorite: false)
+        ])
+        
+        var body: some View {
+            ReorderableList(widgets: widgets)
+        }
+    }

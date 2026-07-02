@@ -9,25 +9,28 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedTab = 0
+    @State private var favoriteGuide: Bool = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
             // MARK: Home
             NavigationStack {
-                HomeView()
+                HomeView(selectedTab: $selectedTab, favoriteGuide: $favoriteGuide)
                     .navigationTitle(Text("Home")) // Top header if wanted
             }
             .tabItem {
                 Label("Home", systemImage: "house.fill") //icons present in SF Symbols, should be able to upload our own images too
             }
+            .tag(0)
             
             // MARK: Inventory
             NavigationStack {
-                InventoryView()
+                InventoryView(favoriteGuide: $favoriteGuide)
             }
             .tabItem {
                 Label("Inventory", systemImage: "shippingbox.fill")
             }
+            .tag(1)
             
             // MARK: Fabrication
             NavigationStack {
@@ -36,6 +39,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Fabrication", systemImage: "scissors")
             }
+            .tag(2)
             
             // MARK: Shipping
             NavigationStack {
@@ -44,6 +48,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Shipping", systemImage: "truck.box.fill")
             }
+            .tag(3)
             
             // MARK: Financials
             NavigationStack {
@@ -52,6 +57,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Financials", systemImage: "dollarsign")
             }
+            .tag(4)
         }
     }
 }
