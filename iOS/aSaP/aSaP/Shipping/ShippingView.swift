@@ -11,7 +11,7 @@ struct ShippingView: View {
     @Environment(AppState.self) private var appState
     
     var body: some View {
-        // Passing the page key lets ReorderableList save this page's widget order. -reg
+        // Passing the page key lets ReorderableList save this page's widget order.
         ReorderableList(
             widgets: appState.list(for: AppVariables.PageKeys.ship),
             pageKey: AppVariables.PageKeys.ship

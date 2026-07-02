@@ -10,7 +10,7 @@ import SwiftUI
 
 /// Example Widget, follow basic guide when making different widgets
 struct ExampleWidget: WidgetProtocol {
-    // Layout persistence depends on stable IDs; callers can still omit this for preview-only widgets. -reg
+    // Layout persistence depends on stable IDs; callers can still omit this for preview-only widgets.
     let id: UUID
     var name: String
     var isFavorite: Bool

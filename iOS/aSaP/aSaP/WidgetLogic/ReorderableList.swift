@@ -13,7 +13,7 @@ struct ReorderableList: View {
     @Environment(AppState.self) private var appState
     @Bindable var widgets: WidgetList
     @Binding var runTutorial: Bool
-    // When a page key is present, drag changes are saved to AppState for relaunch persistence. -reg
+    /// When a page key is present, drag changes are saved to AppState for relaunch persistence.
     private let pageKey: String?
     // Variables
     private let widgetCornerRadius: CGFloat = 24
@@ -66,10 +66,10 @@ struct ReorderableList: View {
                 }
                 .onMove { source, destination in
                     if let pageKey {
-                        // Persist real page reorders through AppState so UserDefaults is updated. -reg
+                        /// Persist real page reorders through AppState so UserDefaults is updated.
                         appState.moveWidgets(on: pageKey, from: source, to: destination)
                     } else {
-                        // Derived or preview lists can still move locally without writing layout data. -reg
+                       // Derived or preview lists can still move locally without writing layout data.
                         widgets.move(from: source, to: destination)
                     }
                 }

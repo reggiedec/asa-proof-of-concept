@@ -92,7 +92,7 @@ struct WidgetHeader: View {
         let isFavorited = appState.favoriteIDs.contains(widget.id)
         
         return Button {
-            // Route favorite changes through AppState so the saved layout updates in one place. -reg
+            // Route favorite changes through AppState so the saved layout updates in one place.
             appState.toggleFavorite(for: widget.id)
         } label: {
             Image(systemName: isFavorited ? "star.fill" : "star")

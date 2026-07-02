@@ -13,7 +13,7 @@ struct InventoryView: View {
     @Binding var favoriteGuide: Bool
     
     var body: some View {
-        // Passing the page key lets ReorderableList save this page's widget order. -reg
+        // Passing the page key lets ReorderableList save this page's widget order.
         ReorderableList(
             widgets: appState.list(for: AppVariables.PageKeys.inv),
             pageKey: AppVariables.PageKeys.inv,
