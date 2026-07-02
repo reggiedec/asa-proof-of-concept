@@ -24,7 +24,9 @@ class AppState {
         // Should change later when using mock data
         // Pages
         pageList = [
-            AppVariables.PageKeys.inv : .init(items: []),
+            AppVariables.PageKeys.inv : .init(items: [
+                ExampleWidget(name: "PLACEHOLDER", isFavorite: false)
+            ]),
             AppVariables.PageKeys.fab : .init(items: []),
             AppVariables.PageKeys.ship : .init(items: []),
             AppVariables.PageKeys.fin : .init(items: [

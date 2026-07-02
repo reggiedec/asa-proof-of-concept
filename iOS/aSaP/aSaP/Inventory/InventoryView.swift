@@ -10,14 +10,17 @@ import SwiftUI
 struct InventoryView: View {
     @Environment(AppState.self) private var appState
     
+    @Binding var favoriteGuide: Bool
+    
     var body: some View {
-        ReorderableList(widgets: appState.list(for: AppVariables.PageKeys.inv))
+        ReorderableList(widgets: appState.list(for: AppVariables.PageKeys.inv), runTutorial: $favoriteGuide)
     }
+        
 }
 
 #Preview {
     @Previewable @State var appState = AppState()
     
-    InventoryView()
+    InventoryView(favoriteGuide: Binding<Bool>.constant(true))
         .environment(appState)
 }
