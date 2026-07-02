@@ -11,7 +11,11 @@ struct FinancialsView: View {
     @Environment(AppState.self) private var appState
     
     var body: some View {
-        ReorderableList(widgets: appState.list(for: AppVariables.PageKeys.fin))
+        // Passing the page key lets ReorderableList save this page's widget order. -reg
+        ReorderableList(
+            widgets: appState.list(for: AppVariables.PageKeys.fin),
+            pageKey: AppVariables.PageKeys.fin
+        )
     }
 }
 

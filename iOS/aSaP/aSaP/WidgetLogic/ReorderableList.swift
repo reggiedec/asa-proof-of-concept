@@ -10,21 +10,26 @@ import SwiftUI
 ///  This should be the body of each page we make.
 ///  Store a WidgetList for each page, to add items to favorited, when favorite button is pushed append to the favorites WidigetList
 struct ReorderableList: View {
+    @Environment(AppState.self) private var appState
     @Bindable var widgets: WidgetList
     @Binding var runTutorial: Bool
+    // When a page key is present, drag changes are saved to AppState for relaunch persistence. -reg
+    private let pageKey: String?
     // Variables
     private let widgetCornerRadius: CGFloat = 24
     private let horizontalPadding: CGFloat = 12
     private let verticalPadding: CGFloat = 12
     private let widgetGap: CGFloat = 12 // Does not match Figma, 24 felt way too big
     
-    init(widgets: WidgetList) {
+    init(widgets: WidgetList, pageKey: String? = nil) {
         self.widgets = widgets
+        self.pageKey = pageKey
         self._runTutorial = Binding<Bool>.constant(false)
     }
     
-    init(widgets: WidgetList, runTutorial: Binding<Bool>) {
+    init(widgets: WidgetList, pageKey: String? = nil, runTutorial: Binding<Bool>) {
         self.widgets = widgets
+        self.pageKey = pageKey
         self._runTutorial = runTutorial
     }
     
@@ -59,7 +64,15 @@ struct ReorderableList: View {
                         )
                         .padding(.vertical, widgetGap)
                 }
-                .onMove(perform: widgets.move)
+                .onMove { source, destination in
+                    if let pageKey {
+                        // Persist real page reorders through AppState so UserDefaults is updated. -reg
+                        appState.moveWidgets(on: pageKey, from: source, to: destination)
+                    } else {
+                        // Derived or preview lists can still move locally without writing layout data. -reg
+                        widgets.move(from: source, to: destination)
+                    }
+                }
             }
             .scrollContentBackground(.hidden)
             .buttonStyle(.borderless)
