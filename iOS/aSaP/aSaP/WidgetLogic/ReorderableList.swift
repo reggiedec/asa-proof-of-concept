@@ -42,48 +42,48 @@ struct ReorderableList: View {
             AnyView(item.body)
         }
     }
-        
-        var body: some View {
-            List {
-                ForEach(widgets.items, id: \.id) { item in
-                    generateView(item: item)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets())
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, horizontalPadding)
-                        .padding(.vertical, verticalPadding)
-                        .background(
-                            RoundedRectangle(cornerRadius: widgetCornerRadius)
-                                .fill(.white)
-                        )
-                        .padding(.vertical, widgetGap)
-                }
-                .onMove(perform: widgets.move)
+    
+    var body: some View {
+        List {
+            ForEach(widgets.items, id: \.id) { item in
+                generateView(item: item)
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, horizontalPadding)
+                    .padding(.vertical, verticalPadding)
+                    .background(
+                        RoundedRectangle(cornerRadius: widgetCornerRadius)
+                            .fill(.white)
+                    )
+                    .padding(.vertical, widgetGap)
             }
-            .scrollContentBackground(.hidden)
-            .buttonStyle(.borderless)
-            .background(Color("BackgroundColor")) // Changes the color for each page
-            
+            .onMove(perform: widgets.move)
         }
-    }
-    
-    #Preview {
-        @Previewable @State var appState = AppState()
+        .scrollContentBackground(.hidden)
+        .buttonStyle(.borderless)
+        .background(Color("BackgroundColor")) // Changes the color for each page
         
-        PreviewContainer()
-            .environment(appState)
     }
+}
+
+#Preview {
+    @Previewable @State var appState = AppState()
     
-    struct PreviewContainer: View {
-        @State private var widgets = WidgetList(items: [
-            ExampleWidget(name: "TEST_One", isFavorite: false),
-            ExampleWidget(name: "TEST_Two", isFavorite: false),
-            ExampleWidget(name: "TEST_Thr", isFavorite: false),
-            ExampleWidget(name: "TEST_Fou", isFavorite: false)
-        ])
-        
-        var body: some View {
-            ReorderableList(widgets: widgets)
-        }
+    PreviewContainer()
+        .environment(appState)
+}
+
+struct PreviewContainer: View {
+    @State private var widgets = WidgetList(items: [
+        ExampleWidget(name: "TEST_One", isFavorite: false),
+        ExampleWidget(name: "TEST_Two", isFavorite: false),
+        ExampleWidget(name: "TEST_Thr", isFavorite: false),
+        ExampleWidget(name: "TEST_Fou", isFavorite: false)
+    ])
+    
+    var body: some View {
+        ReorderableList(widgets: widgets)
     }
+}

@@ -25,7 +25,7 @@ class AppState {
         // Pages
         pageList = [
             AppVariables.PageKeys.inv : .init(items: [
-                ExampleWidget(name: "PLACEHOLDER", isFavorite: false)
+                StockLevelsWidget()
             ]),
             AppVariables.PageKeys.fab : .init(items: []),
             AppVariables.PageKeys.ship : .init(items: []),
