@@ -60,8 +60,8 @@ struct StockItem: Identifiable {
         return .high
     }
     
-    /// <#Description#>
-    /// - Returns: <#description#>
+    /// Math to determine the percentage of overflow
+    /// - Returns: Int value representing the overflow amount
     func calculateOverflowPercentage() -> Int {
         let overflowPercentage = ((quantity - minimum) / minimum) * 100
         
