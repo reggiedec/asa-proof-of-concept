@@ -48,6 +48,8 @@ struct StockLevelsWidget: WidgetProtocol {
             }
     }
     
+    /// Tag that states where the system designated min value is
+    /// - Returns: simple view for this tag
     private func minTag() -> some View {
         return ZStack {
             Circle()
@@ -55,14 +57,18 @@ struct StockLevelsWidget: WidgetProtocol {
             RoundedRectangle(cornerRadius: 100)
                 .frame(width: 1, height: 12)
                 .padding(.top, 12)
+                .padding(.trailing, 0.5)
             Text("Min")
                 .font(Font.custom("BeVietnamPro-SemiBold", size: 10))
                 .padding(.top, 35)
         }
     }
     
+    /// The bar of Stock items for the stock levels widget
+    /// - Parameter stockItem: item getting displayed
+    /// - Returns: a visual representation of stock level for a specific item
     private func progressBar(stockItem: StockItem) -> some View {
-        let barSquish: CGFloat = 2
+        let barSquish: CGFloat = 0
         let overflowPercentage = stockItem.calculateOverflowPercentage()
         let fillRatio = min(stockItem.quantity / stockItem.minimum, 1.0)
         let mainWidth = {
@@ -91,50 +97,49 @@ struct StockLevelsWidget: WidgetProtocol {
                         ZStack {
                             // stripped
                             if overflowPercentage > 0 {
-                                RoundedRectangle(cornerRadius: 100)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                Color(gradientStart),
-                                                Color(gradientEnd),
-                                                Color(gradientEnd)
-                                            ],
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                                    .padding(.vertical, barSquish)
-                                    .frame(width: geo.size.width * mainWidth())
-                                    .overlay {
-                                        HStack(spacing: 12) {
-                                            ForEach(0..<20) {_ in
-                                                Rectangle()
-                                                    .fill(.white.opacity(0.3))
-                                                    .frame(width: 10)
-                                                    .rotationEffect(.degrees(15))
-                                            }
+                                GenericBar(
+                                    cornerRadius: 100,
+                                    barFill: LinearGradient(
+                                        colors: [
+                                            Color(gradientStart),
+                                            Color(gradientEnd),
+                                            Color(gradientEnd)
+                                        ],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    ),
+                                    barHeight: 100,
+                                    fillRatio: geo.size.width * mainWidth()
+                                )
+                                .overlay {
+                                    HStack(spacing: 12) {
+                                        ForEach(0..<20) {_ in
+                                            Rectangle()
+                                                .fill(.white.opacity(0.3))
+                                                .frame(width: 10)
+                                                .rotationEffect(.degrees(15))
                                         }
-                                        .frame(width: geo.size.width * mainWidth())
-                                        .clipShape(RoundedRectangle(cornerRadius: 20))
                                     }
+                                    .frame(width: geo.size.width * mainWidth())
+                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                                }
                             }
                             // solid color
                             HStack {
-                                RoundedRectangle(cornerRadius: 100)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                Color(gradientStart),
-                                                Color(gradientEnd),
-                                                Color(gradientEnd)
-                                            ],
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                                    .shadow(color: .white.opacity(0.85), radius: 5)
-                                    .padding(.vertical, barSquish)
-                                    .frame(width: geo.size.width * (1.0 / 3.0) * fillRatio)
+                                GenericBar(
+                                    cornerRadius: 100,
+                                    barFill: LinearGradient(
+                                                colors: [
+                                                    Color(gradientStart),
+                                                    Color(gradientEnd),
+                                                    Color(gradientEnd)
+                                                ],
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            ),
+                                    barHeight: 100,
+                                    fillRatio: geo.size.width * (1.0 / 3.0) * fillRatio
+                                )
                                 Spacer()
                             }
                         }
@@ -150,6 +155,9 @@ struct StockLevelsWidget: WidgetProtocol {
         }
     }
     
+    /// System to put individual stock item pieces into a single view
+    /// - Parameter item: the item of stock/inventory that will be viewed
+    /// - Returns: view of stock with progress bar. 
     private func generateStockItemVisual(item: StockItem) -> some View {
         let leadingPadding: CGFloat = 8
         let minimum = item.minimum
@@ -177,6 +185,7 @@ struct StockLevelsWidget: WidgetProtocol {
         ForEach(stockItems) { item in
             generateStockItemVisual(item: item)
                 .padding(.bottom, 20)
+                .frame(maxHeight: 100)
         }
     }
 }

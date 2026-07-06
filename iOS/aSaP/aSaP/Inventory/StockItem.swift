@@ -45,6 +45,8 @@ struct StockItem: Identifiable {
         self.level = findOverflowAmount()
     }
     
+    /// Simple way to determine the InventoryLevel of a given stock
+    /// - Returns: InventoryLevel enum value
     func findOverflowAmount() -> InventoryLevel {
         let rawOverflow = self.quantity - self.minimum
         // raw overflow / minimum should be overflow percentage
@@ -58,12 +60,16 @@ struct StockItem: Identifiable {
         return .high
     }
     
+    /// <#Description#>
+    /// - Returns: <#description#>
     func calculateOverflowPercentage() -> Int {
         let overflowPercentage = ((quantity - minimum) / minimum) * 100
         
         return Int(overflowPercentage)
     }
     
+    /// Gets colors for the stock level pill
+    /// - Returns: two colors, (Text Color, Background Color)
     func getLevelColors() -> (Color, Color) {
         return {
             switch level {
