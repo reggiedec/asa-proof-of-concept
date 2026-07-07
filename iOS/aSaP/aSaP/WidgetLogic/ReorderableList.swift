@@ -59,12 +59,19 @@ struct ReorderableList: View {
                     )
                     .padding(.vertical, widgetGap)
             }
-            .onMove(perform: widgets.move)
+            .onMove { source, destination in
+                if let pageKey {
+                    /// Persist real page reorders through AppState so UserDefaults is updated.
+                    appState.moveWidgets(on: pageKey, from: source, to: destination)
+                } else {
+                   // Derived or preview lists can still move locally without writing layout data.
+                    widgets.move(from: source, to: destination)
+                }
+            }
         }
         .scrollContentBackground(.hidden)
         .buttonStyle(.borderless)
         .background(Color("BackgroundColor")) // Changes the color for each page
-        
     }
 }
 

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StockLevelsWidget: WidgetProtocol {
-    let id = UUID()
+    let id: UUID
     var name: String = "Stock Levels"
     var isFavorite: Bool = false // Check if this causes issues
     private(set) var stockItems : [StockItem] = [
@@ -191,5 +191,5 @@ struct StockLevelsWidget: WidgetProtocol {
 }
 
 #Preview {
-    StockLevelsWidget().body
+    StockLevelsWidget(id: UUID()).body
 }
