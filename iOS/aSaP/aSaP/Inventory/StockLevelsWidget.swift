@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StockLevelsWidget: WidgetProtocol {
-    let id = UUID()
+    let id: UUID
     var name: String = "Stock Levels"
     var isFavorite: Bool = false // Check if this causes issues
     private(set) var stockItems : [StockItem] = [
@@ -26,23 +26,14 @@ struct StockLevelsWidget: WidgetProtocol {
     /// - Parameter stockItem: a specific stock item
     /// - Returns: a view representing the level the inventory is at
     private func overflowPill(stockItem: StockItem) -> some View {
-        let (textColor, backgroundColor): (Color, Color) = {
-            switch stockItem.level {
-            case .warning:
-                return (Color("TrendTextRed"), Color("BackgroundRed"))
-            case .low:
-                return (Color("CharcoalBlack"), Color("BackgroundBlack"))
-            case .high:
-                return (Color("TrendTextGreen"), Color("BackgroundGreen"))
-            }
-        }()
+        let (textColor, backgroundColor) = stockItem.getLevelColors()
 
         return Text(stockItem.level.description)
             .font(Font.custom("BeVietnamPro-SemiBold", size: 12))
             .foregroundStyle(textColor)
             .padding(.vertical, 8)
             .padding(.horizontal, 14)
-            .overlay {
+            .background {
                 RoundedRectangle(cornerRadius: 100)
                     .fill(backgroundColor)
             }
@@ -190,5 +181,5 @@ struct StockLevelsWidget: WidgetProtocol {
 }
 
 #Preview {
-    StockLevelsWidget().body
+    StockLevelsWidget(id: UUID()).body
 }

@@ -10,9 +10,16 @@ import SwiftUI
 
 /// Example Widget, follow basic guide when making different widgets
 struct ExampleWidget: WidgetProtocol {
-    let id = UUID()
+    // Layout persistence depends on stable IDs; callers can still omit this for preview-only widgets.
+    let id: UUID
     var name: String
     var isFavorite: Bool
+    
+    init(id: UUID = UUID(), name: String, isFavorite: Bool) {
+        self.id = id
+        self.name = name
+        self.isFavorite = isFavorite
+    }
     
     var body: some View {
         VStack {

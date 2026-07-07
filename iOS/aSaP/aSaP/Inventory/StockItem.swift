@@ -51,6 +51,11 @@ struct StockItem: Identifiable {
         let rawOverflow = self.quantity - self.minimum
         // raw overflow / minimum should be overflow percentage
         
+        guard minimum > 0 else {
+            // basic safeguard for no minimum
+            return quantity > 0 ? .low : .warning
+        }
+        
         if rawOverflow < 0 {
             return .warning
         } else if rawOverflow / self.minimum < 0.75 {
@@ -63,9 +68,9 @@ struct StockItem: Identifiable {
     /// Math to determine the percentage of overflow
     /// - Returns: Int value representing the overflow amount
     func calculateOverflowPercentage() -> Int {
+        guard minimum != 0 else { return 0 }
         let overflowPercentage = ((quantity - minimum) / minimum) * 100
-        
-        return Int(overflowPercentage)
+        return Int(overflowPercentage.rounded())
     }
     
     /// Gets colors for the stock level pill

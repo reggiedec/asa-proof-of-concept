@@ -11,7 +11,11 @@ struct FabricationView: View {
     @Environment(AppState.self) private var appState
     
     var body: some View {
-        ReorderableList(widgets: appState.list(for: AppVariables.PageKeys.fab))
+        // Passing the page key lets ReorderableList save this page's widget order.
+        ReorderableList(
+            widgets: appState.list(for: AppVariables.PageKeys.fab),
+            pageKey: AppVariables.PageKeys.fab
+        )
     }
 }
 
