@@ -167,18 +167,17 @@ struct StockLevelsWidget: WidgetProtocol {
             HStack {
                 Text(item.name)
                     .font(Font.custom("BeVietnamPro-Bold", size: 20))
-                    .padding(.leading, leadingPadding)
                 Spacer()
                 overflowPill(stockItem: item)
             }
             progressBar(stockItem: item)
-                .padding(.leading, leadingPadding)
             HStack {
                 Spacer()
                 Text("\(String(format: "%.1f",quantity))/\(String(format: "%.1f",minimum)) Minimum Tons")
                     .font(Font.custom("BeVietnamPro-Bold", size: 13))
             }
         }
+        .padding(.leading, AppVariables.widgetVariables.leadingPadding)
     }
     
     var body: some View {
