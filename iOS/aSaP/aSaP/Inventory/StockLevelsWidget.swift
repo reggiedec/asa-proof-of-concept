@@ -11,11 +11,7 @@ struct StockLevelsWidget: WidgetProtocol {
     let id: UUID
     var name: String = "Stock Levels"
     var isFavorite: Bool = false // Check if this causes issues
-    private(set) var stockItems : [StockItem] = [
-        StockItem(name: "#8 Rebar (1\")", quantity: 80.0, minimum: 100.0),
-        StockItem(name: "#5 Rebar (5/8\")", quantity: 120.0, minimum: 100.0),
-        StockItem(name: "#4 Rebar (1/2\")", quantity: 230.0, minimum: 100.0),
-    ]
+    private(set) var stockItems : [StockItem]
     
     static func == (lhs: StockLevelsWidget, rhs: StockLevelsWidget) -> Bool {
         lhs.id == rhs.id
@@ -107,7 +103,7 @@ struct StockLevelsWidget: WidgetProtocol {
                                         ForEach(0..<20) {_ in
                                             Rectangle()
                                                 .fill(.white.opacity(0.3))
-                                                .frame(width: 10)
+                                                .frame(width: 10, height: 20) // added height to fix gap at top and bottom
                                                 .rotationEffect(.degrees(15))
                                         }
                                     }
@@ -150,7 +146,6 @@ struct StockLevelsWidget: WidgetProtocol {
     /// - Parameter item: the item of stock/inventory that will be viewed
     /// - Returns: view of stock with progress bar. 
     private func generateStockItemVisual(item: StockItem) -> some View {
-        let leadingPadding: CGFloat = 8
         let minimum = item.minimum
         let quantity = item.quantity
         
@@ -181,5 +176,9 @@ struct StockLevelsWidget: WidgetProtocol {
 }
 
 #Preview {
-    StockLevelsWidget(id: UUID()).body
+    StockLevelsWidget(id: UUID(), stockItems: [
+        StockItem(name: "#8 Rebar (1\")", quantity: 80.0, minimum: 100.0),
+        StockItem(name: "#5 Rebar (5/8\")", quantity: 120.0, minimum: 100.0),
+        StockItem(name: "#4 Rebar (1/2\")", quantity: 230.0, minimum: 100.0),
+    ]).body
 }

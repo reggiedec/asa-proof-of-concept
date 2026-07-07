@@ -12,13 +12,14 @@ struct FabDetailsWidget: WidgetProtocol {
         lhs.id == rhs.id
     }
     
-    let id = UUID()
+    let id: UUID
     let name: String = "Fabrication Details"
     var isFavorite: Bool = false
     var jobDetails: [JobDetail]
     private let formatter = DateFormatter()
     
-    init(jobDetails: [JobDetail]) {
+    init(id: UUID, jobDetails: [JobDetail]) {
+        self.id = id
         self.jobDetails = jobDetails
         formatter.locale = .current
         formatter.dateFormat = "MMM dd"
@@ -130,7 +131,7 @@ struct FabDetailsWidget: WidgetProtocol {
 }
 
 #Preview {
-    FabDetailsWidget(jobDetails: [
+    FabDetailsWidget(id: UUID(), jobDetails: [
         JobDetail(
             name: "J-2245",
             status: .atRisk,

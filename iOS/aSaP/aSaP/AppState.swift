@@ -42,6 +42,15 @@ class AppState {
             0x87, 0x24, 0xDC, 0xE9, 0x4E, 0x53, 0x46, 0x1E,
             0xAE, 0xFD, 0x4D, 0x48, 0xF4, 0x23, 0x0E, 0x3D
         ))
+        static let fabDetailsWidget = UUID(uuidString: "1D62AF8C-4534-437B-9AE2-2A51C3618A2A")!
+        /*
+         Optional Id section
+         run "uuidgen" in terminal to get a UUID, past when adding new value to the application
+         Example result
+         28FA5593-A92F-470A-993B-909801F28EAA
+         Then
+         static let exampleID = UUID(uuidString: "28FA5593-A92F-470A-993B-909801F28EAA")!
+         */
     }
     /// Local store for widget layout preferences.
     @ObservationIgnored private let userDefaults: UserDefaults
@@ -72,39 +81,6 @@ class AppState {
     
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
-//        #if DEBUG
-//            pageList = [
-//                AppVariables.PageKeys.inv : .init(items: [
-//                    StockLevelsWidget()
-//                ]),
-//                AppVariables.PageKeys.fab : .init(items: [
-//                    FabDetailsWidget(jobDetails: [
-//                        JobDetail(name: "J-2245", status: .atRisk,
-//                            dueDate: "Jun 12", location: "Middletown Parking Garage", company: "Valley Structures", amountCompleted: 34.2, amountTotal: 84.2, ordersCompleted: 9, ordersTotal: 22
-//                        ),
-//                        JobDetail(name: "J-2233", status: .onTrack, dueDate: "Jun 12", location: "Small", company: "Really long smaller text to see contrast", amountCompleted: 30.0, amountTotal: 60.0, ordersCompleted: 15, ordersTotal: 30
-//                        ),
-//                        JobDetail(name: "J-2241", status: .scheduled, dueDate: "Jun 19", location: "Really long main text to check length amount", company: "Checking how overflow looks on the smaller bottom bar", amountCompleted: 0.0, amountTotal: 40.0, ordersCompleted: 0, ordersTotal: 10
-//                        ),
-//                        JobDetail(name: "J-2251", status: .completed, dueDate: "Jun 07", location: "Longer Main Text but not too long", company: "small", amountCompleted: 100.0, amountTotal: 100.0, ordersCompleted: 25, ordersTotal: 25
-//                        )
-//                    ])
-//                ]),
-//                AppVariables.PageKeys.ship : .init(items: []),
-//                AppVariables.PageKeys.fin : .init(items: [
-//                    ExampleWidget(name: "TEST_One", isFavorite: false),
-//                    ExampleWidget(name: "TEST_Two", isFavorite: false),
-//                    ExampleWidget(name: "TEST_Thr", isFavorite: false)
-//                ]),
-//            ]
-//        #else
-//            pageList = [
-//                AppVariables.PageKeys.inv : .init(items: []),
-//                AppVariables.PageKeys.fab : .init(items: []),
-//                AppVariables.PageKeys.ship : .init(items: []),
-//                AppVariables.PageKeys.fin : .init(items: []),
-//            ]
-//        #endif
         
         /// Recreate the current widgets first, then layer the user's saved layout onto them.
         let savedLayout = Self.loadLayout(from: userDefaults)
@@ -147,30 +123,47 @@ class AppState {
     
     private static func defaultPageList() -> [String: WidgetList] {
         /// This remains the source of available widgets; persistence only changes their order/favorite state.
-        [
-            AppVariables.PageKeys.inv : .init(items: [
-                StockLevelsWidget(id: WidgetIDs.inventoryPlaceholder)
-            ]),
-            AppVariables.PageKeys.fab : .init(items: []),
-            AppVariables.PageKeys.ship : .init(items: []),
-            AppVariables.PageKeys.fin : .init(items: [
-                ExampleWidget(
-                    id: WidgetIDs.financialTestOne,
-                    name: "TEST_One",
-                    isFavorite: false
-                ),
-                ExampleWidget(
-                    id: WidgetIDs.financialTestTwo,
-                    name: "TEST_Two",
-                    isFavorite: false
-                ),
-                ExampleWidget(
-                    id: WidgetIDs.financialTestThree,
-                    name: "TEST_Thr",
-                    isFavorite: false
-                )
-            ]),
-        ]
+        var pageList: [String: WidgetList] = [:]
+        
+        #if DEBUG
+            pageList = [
+                AppVariables.PageKeys.inv : .init(items: [
+                    StockLevelsWidget(id: WidgetIDs.inventoryPlaceholder, stockItems: [
+                        StockItem(name: "#8 Rebar (1\")", quantity: 80.0, minimum: 100.0),
+                        StockItem(name: "#5 Rebar (5/8\")", quantity: 120.0, minimum: 100.0),
+                        StockItem(name: "#4 Rebar (1/2\")", quantity: 230.0, minimum: 100.0),
+                    ])
+                ]),
+                AppVariables.PageKeys.fab : .init(items: [
+                    FabDetailsWidget(id: WidgetIDs.fabDetailsWidget, jobDetails: [
+                        JobDetail(name: "J-2245", status: .atRisk,
+                            dueDate: "Jun 12", location: "Middletown Parking Garage", company: "Valley Structures", amountCompleted: 34.2, amountTotal: 84.2, ordersCompleted: 9, ordersTotal: 22
+                        ),
+                        JobDetail(name: "J-2233", status: .onTrack, dueDate: "Jun 12", location: "Small", company: "Really long smaller text to see contrast", amountCompleted: 30.0, amountTotal: 60.0, ordersCompleted: 15, ordersTotal: 30
+                        ),
+                        JobDetail(name: "J-2241", status: .scheduled, dueDate: "Jun 19", location: "Really long main text to check length amount", company: "Checking how overflow looks on the smaller bottom bar", amountCompleted: 0.0, amountTotal: 40.0, ordersCompleted: 0, ordersTotal: 10
+                        ),
+                        JobDetail(name: "J-2251", status: .completed, dueDate: "Jun 07", location: "Longer Main Text but not too long", company: "small", amountCompleted: 100.0, amountTotal: 100.0, ordersCompleted: 25, ordersTotal: 25
+                        )
+                    ])
+                ]),
+                AppVariables.PageKeys.ship : .init(items: []),
+                AppVariables.PageKeys.fin : .init(items: [
+                    ExampleWidget(id: WidgetIDs.financialTestOne, name: "TEST_One", isFavorite: false),
+                    ExampleWidget(id: WidgetIDs.financialTestOne, name: "TEST_Two", isFavorite: false),
+                    ExampleWidget(id: WidgetIDs.financialTestOne, name: "TEST_Thr", isFavorite: false)
+                ]),
+            ]
+        #else
+            pageList = [
+                AppVariables.PageKeys.inv : .init(items: []),
+                AppVariables.PageKeys.fab : .init(items: []),
+                AppVariables.PageKeys.ship : .init(items: []),
+                AppVariables.PageKeys.fin : .init(items: []),
+            ]
+        #endif
+        
+        return pageList
     }
     
     /// Reorders current widgets using the saved layout without replacing the widgets themselves.
