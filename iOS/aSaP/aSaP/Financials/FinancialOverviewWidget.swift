@@ -19,15 +19,21 @@ struct FinancialOverviewWidget: WidgetProtocol {
             value: "$387k"
         ),
         OverviewMetric(
-            id: "accounts-receivable",
-            title: "Accounts Receivable",
-            value: "$214k",
+            id: "accounts-payable",
+            title: "Accounts Payable",
+            value: "$125k",
+            status: .critical,
             actionTitle: "View"
         ),
         OverviewMetric(
-            id: "ap-aging-90-plus",
-            title: "AP Aging 90+ Days",
-            value: "$125k",
+            id: "total-weekly-sales",
+            title: "Total Weekly Sales",
+            value: "$352k"
+        ),
+        OverviewMetric(
+            id: "accounts-receivable",
+            title: "Accounts Receivable",
+            value: "$113k",
             status: .critical,
             actionTitle: "View"
         )

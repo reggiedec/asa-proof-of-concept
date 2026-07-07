@@ -37,10 +37,10 @@ struct OverviewMetric: Identifiable, Equatable {
 struct OverviewMetricBlock: View {
     let metric: OverviewMetric
 
-    private let cornerRadius: CGFloat = 5
-    private let minHeight: CGFloat = 86
-    private let horizontalPadding: CGFloat = 16
-    private let verticalPadding: CGFloat = 14
+    private let cornerRadius: CGFloat = 6
+    private let minHeight: CGFloat = 87
+    private let horizontalPadding: CGFloat = 17
+    private let verticalPadding: CGFloat = 17
 
     private var isCritical: Bool {
         metric.status == .critical
@@ -57,11 +57,11 @@ struct OverviewMetricBlock: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(metric.title)
-                .font(Font.custom("BeVietnamPro-SemiBold", size: 11))
-                .tracking(2)
+                .font(Font.custom("BeVietnamPro-Medium", size: 10))
+                .tracking(1)
                 .foregroundStyle(secondaryTextColor)
-                .textCase(.uppercase)
                 .lineLimit(2)
+                .minimumScaleFactor(0.78)
 
             Spacer(minLength: 0)
 
@@ -69,7 +69,7 @@ struct OverviewMetricBlock: View {
                 Text(metric.value)
                     .font(Font.custom("BeVietnamPro-Bold", size: 30))
                     .foregroundStyle(primaryTextColor)
-                    .minimumScaleFactor(0.72)
+                    .minimumScaleFactor(0.6)
                     .lineLimit(1)
 
                 Spacer(minLength: 8)
@@ -94,13 +94,13 @@ struct OverviewMetricBlock: View {
                                 Color("GradientRedStart"),
                                 Color("GradientRedEnd")
                             ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
                     )
             } else {
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(Color("GrayBars"))
+                    .fill(Color("BackgroundBlack"))
             }
         }
     }
@@ -113,8 +113,6 @@ struct OverviewMetricGrid: View {
         switch metrics.count {
         case 0...1:
             return 1
-        case 2...3:
-            return metrics.count
         default:
             return 2
         }
@@ -122,13 +120,13 @@ struct OverviewMetricGrid: View {
 
     private var columns: [GridItem] {
         Array(
-            repeating: GridItem(.flexible(), spacing: 12, alignment: .top),
+            repeating: GridItem(.flexible(), spacing: 15, alignment: .top),
             count: columnCount
         )
     }
 
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 14) {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 15) {
             ForEach(metrics) { metric in
                 OverviewMetricBlock(metric: metric)
             }
