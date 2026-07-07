@@ -47,56 +47,55 @@ struct ReorderableList: View {
             AnyView(item.body)
         }
     }
-        
-        var body: some View {
-            List {
-                ForEach(widgets.items, id: \.id) { item in
-                    generateView(item: item)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets())
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, horizontalPadding)
-                        .padding(.vertical, verticalPadding)
-                        .background(
-                            RoundedRectangle(cornerRadius: widgetCornerRadius)
-                                .fill(.white)
-                        )
-                        .padding(.vertical, widgetGap)
-                }
-                .onMove { source, destination in
-                    if let pageKey {
-                        /// Persist real page reorders through AppState so UserDefaults is updated.
-                        appState.moveWidgets(on: pageKey, from: source, to: destination)
-                    } else {
-                       // Derived or preview lists can still move locally without writing layout data.
-                        widgets.move(from: source, to: destination)
-                    }
+    
+    var body: some View {
+        List {
+            ForEach(widgets.items, id: \.id) { item in
+                generateView(item: item)
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, horizontalPadding)
+                    .padding(.vertical, verticalPadding)
+                    .background(
+                        RoundedRectangle(cornerRadius: widgetCornerRadius)
+                            .fill(.white)
+                    )
+                    .padding(.vertical, widgetGap)
+            }
+            .onMove { source, destination in
+                if let pageKey {
+                    /// Persist real page reorders through AppState so UserDefaults is updated.
+                    appState.moveWidgets(on: pageKey, from: source, to: destination)
+                } else {
+                   // Derived or preview lists can still move locally without writing layout data.
+                    widgets.move(from: source, to: destination)
                 }
             }
-            .scrollContentBackground(.hidden)
-            .buttonStyle(.borderless)
-            .background(Color("BackgroundColor")) // Changes the color for each page
-            
         }
+        .scrollContentBackground(.hidden)
+        .buttonStyle(.borderless)
+        .background(Color("BackgroundColor")) // Changes the color for each page
     }
+}
+
+#Preview {
+    @Previewable @State var appState = AppState()
     
-    #Preview {
-        @Previewable @State var appState = AppState()
-        
-        PreviewContainer()
-            .environment(appState)
-    }
+    PreviewContainer()
+        .environment(appState)
+}
+
+struct PreviewContainer: View {
+    @State private var widgets = WidgetList(items: [
+        ExampleWidget(name: "TEST_One", isFavorite: false),
+        ExampleWidget(name: "TEST_Two", isFavorite: false),
+        ExampleWidget(name: "TEST_Thr", isFavorite: false),
+        ExampleWidget(name: "TEST_Fou", isFavorite: false)
+    ])
     
-    struct PreviewContainer: View {
-        @State private var widgets = WidgetList(items: [
-            ExampleWidget(name: "TEST_One", isFavorite: false),
-            ExampleWidget(name: "TEST_Two", isFavorite: false),
-            ExampleWidget(name: "TEST_Thr", isFavorite: false),
-            ExampleWidget(name: "TEST_Fou", isFavorite: false)
-        ])
-        
-        var body: some View {
-            ReorderableList(widgets: widgets)
-        }
+    var body: some View {
+        ReorderableList(widgets: widgets)
     }
+}

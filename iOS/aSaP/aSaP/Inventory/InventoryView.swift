@@ -26,6 +26,6 @@ struct InventoryView: View {
 #Preview {
     @Previewable @State var appState = AppState()
     
-    InventoryView(favoriteGuide: Binding<Bool>.constant(true))
+    InventoryView(favoriteGuide: Binding<Bool>.constant(false))
         .environment(appState)
 }

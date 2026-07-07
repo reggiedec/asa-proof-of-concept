@@ -11,7 +11,6 @@ import Observation
 
 @Observable
 class AppState {
-
     private struct PersistedLayout: Codable {
         var pageOrder: [String: [UUID]]
         var favoriteIDs: [UUID]
@@ -44,19 +43,15 @@ class AppState {
             0xAE, 0xFD, 0x4D, 0x48, 0xF4, 0x23, 0x0E, 0x3D
         ))
     }
-    
     /// Local store for widget layout preferences.
     @ObservationIgnored private let userDefaults: UserDefaults
-    
     var pageList: [String: WidgetList]
-    
     var favoriteIDs: Set<UUID> {
         didSet {
             applyFavoriteStatus()
             saveLayout()
         }
     }
-    
     var favoriteList: WidgetList {
         /// Build Home favorites from current page lists so the displayed widgets are never duplicated.
         let favorites = Self.pageOrder
@@ -86,6 +81,7 @@ class AppState {
             savedPageOrder: savedLayout?.pageOrder ?? [:]
         )
         applyFavoriteStatus()
+
     }
     
     func list(for page: String) -> WidgetList {
@@ -120,11 +116,7 @@ class AppState {
         /// This remains the source of available widgets; persistence only changes their order/favorite state.
         [
             AppVariables.PageKeys.inv : .init(items: [
-                ExampleWidget(
-                    id: WidgetIDs.inventoryPlaceholder,
-                    name: "PLACEHOLDER",
-                    isFavorite: false
-                )
+                StockLevelsWidget(id: WidgetIDs.inventoryPlaceholder)
             ]),
             AppVariables.PageKeys.fab : .init(items: []),
             AppVariables.PageKeys.ship : .init(items: []),
