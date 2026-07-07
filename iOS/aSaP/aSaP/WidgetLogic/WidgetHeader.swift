@@ -92,11 +92,8 @@ struct WidgetHeader: View {
         let isFavorited = appState.favoriteIDs.contains(widget.id)
         
         return Button {
-            if isFavorited {
-                appState.favoriteIDs.remove(widget.id)
-            } else {
-                appState.favoriteIDs.insert(widget.id)
-            }
+            // Route favorite changes through AppState so the saved layout updates in one place.
+            appState.toggleFavorite(for: widget.id)
         } label: {
             Image(systemName: isFavorited ? "star.fill" : "star")
                 .resizable()
