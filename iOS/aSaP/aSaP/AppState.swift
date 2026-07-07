@@ -25,23 +25,15 @@ class AppState {
     ///
     /// Persistence restores layout by matching saved UUIDs to the current widgets. If these values
     /// change, older saved layouts will no longer match the intended widgets, so a user could lose
-    /// their saved order or favorite status for those widgets. :P
+    /// their saved order or favorite status for those widgets.
     private enum WidgetIDs {
         static let inventoryPlaceholder = UUID(uuid: (
             0x3C, 0x53, 0xD4, 0xAE, 0x30, 0x78, 0x43, 0xD2,
             0xB3, 0x0E, 0x5D, 0xA9, 0x41, 0x7D, 0x5A, 0x70
         ))
-        static let financialTestOne = UUID(uuid: (
+        static let financialOverview = UUID(uuid: (
             0x46, 0x5C, 0xD2, 0x43, 0x6E, 0x33, 0x43, 0x82,
             0x8E, 0x11, 0x87, 0x12, 0x05, 0x86, 0xE4, 0xA5
-        ))
-        static let financialTestTwo = UUID(uuid: (
-            0xA4, 0x82, 0xD2, 0x8C, 0x2F, 0xE1, 0x4D, 0x2F,
-            0xB6, 0x02, 0x3D, 0xA8, 0xC9, 0x71, 0x49, 0x35
-        ))
-        static let financialTestThree = UUID(uuid: (
-            0x87, 0x24, 0xDC, 0xE9, 0x4E, 0x53, 0x46, 0x1E,
-            0xAE, 0xFD, 0x4D, 0x48, 0xF4, 0x23, 0x0E, 0x3D
         ))
     }
     
@@ -58,7 +50,7 @@ class AppState {
     }
     
     var favoriteList: WidgetList {
-        /// Build Home favorites from current page lists so the displayed widgets are never duplicated.
+        // Build Home favorites from current page lists so the displayed widgets are never duplicated.
         let favorites = Self.pageOrder
             .compactMap { pageList[$0] }
             .flatMap { $0.items }
@@ -78,7 +70,7 @@ class AppState {
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         
-        /// Recreate the current widgets first, then layer the user's saved layout onto them.
+        // Recreate the current widgets first, then layer the user's saved layout onto them.
         let savedLayout = Self.loadLayout(from: userDefaults)
         favoriteIDs = Set(savedLayout?.favoriteIDs ?? [])
         pageList = Self.applySavedOrder(
@@ -94,7 +86,7 @@ class AppState {
         } else {
             let newPage = WidgetList(items: [])
             pageList[page] = newPage
-            /// Persist newly discovered pages so future launches keep the same page structure.
+            // Persist newly discovered pages so future launches keep the same page structure.
             saveLayout()
             return newPage
         }
@@ -104,7 +96,7 @@ class AppState {
         guard let list = pageList[page] else { return }
         
         list.move(from: source, to: destination)
-        /// Save immediately after drag reordering so the next launch restores this order.
+        // Save immediately after drag reordering so the next launch restores this order.
         saveLayout()
     }
     
@@ -117,7 +109,7 @@ class AppState {
     }
     
     private static func defaultPageList() -> [String: WidgetList] {
-        /// This remains the source of available widgets; persistence only changes their order/favorite state.
+        // This remains the source of available widgets; persistence only changes their order/favorite state.
         [
             AppVariables.PageKeys.inv : .init(items: [
                 ExampleWidget(
@@ -129,21 +121,7 @@ class AppState {
             AppVariables.PageKeys.fab : .init(items: []),
             AppVariables.PageKeys.ship : .init(items: []),
             AppVariables.PageKeys.fin : .init(items: [
-                ExampleWidget(
-                    id: WidgetIDs.financialTestOne,
-                    name: "TEST_One",
-                    isFavorite: false
-                ),
-                ExampleWidget(
-                    id: WidgetIDs.financialTestTwo,
-                    name: "TEST_Two",
-                    isFavorite: false
-                ),
-                ExampleWidget(
-                    id: WidgetIDs.financialTestThree,
-                    name: "TEST_Thr",
-                    isFavorite: false
-                )
+                FinancialOverviewWidget(id: WidgetIDs.financialOverview)
             ]),
         ]
     }
@@ -168,7 +146,7 @@ class AppState {
             let widgetsByID = Dictionary(uniqueKeysWithValues: widgetList.items.map { ($0.id, $0) })
             var orderedWidgets = savedIDs.compactMap { widgetsByID[$0] }
             let orderedIDs = Set(orderedWidgets.map(\.id))
-            /// Append new widgets that were not present when the layout was last saved.
+            // Append new widgets that were not present when the layout was last saved.
             let newWidgets = widgetList.items.filter { !orderedIDs.contains($0.id) }
             
             orderedWidgets.append(contentsOf: newWidgets)
@@ -185,7 +163,7 @@ class AppState {
     }
     
     private func saveLayout() {
-        /// Store compact IDs instead of widget objects because widget content can be refreshed separately.
+        // Store compact IDs instead of widget objects because widget content can be refreshed separately.
         let pageOrder = pageList.mapValues { widgetList in
             widgetList.items.map(\.id)
         }
@@ -199,7 +177,7 @@ class AppState {
     }
     
     private func applyFavoriteStatus() {
-        /// Mirror the saved favorite set back onto each widget for code that reads isFavorite directly.
+        // Mirror the saved favorite set back onto each widget for code that reads isFavorite directly.
         for page in pageList.keys {
             guard let items = pageList[page]?.items else { continue }
             
