@@ -59,7 +59,7 @@ struct JobDetail: Identifiable  {
             switch self {
             case .atRisk:
                 return Color("TrendTextRed")
-            case.onTrack:
+            case .onTrack:
                 return Color("BlueGradient")
             case .scheduled:
                 return Color("CharcoalBlack")
@@ -72,7 +72,7 @@ struct JobDetail: Identifiable  {
             switch self {
             case .atRisk:
                 return Color("BackgroundRed")
-            case.onTrack:
+            case .onTrack:
                 return Color("BlueGradient").opacity(0.10)
             case .scheduled:
                 return Color("BackgroundBlack")
@@ -95,7 +95,7 @@ struct JobDetail: Identifiable  {
             case .scheduled:
                 gradientStart = .grayBars
                 gradientEnd = .grayBars
-            case . completed:
+            case .completed:
                 gradientStart = .gradientGreenStart
                 gradientEnd = .gradientGreenEnd
             }

@@ -40,7 +40,7 @@ struct FabDetailsWidget: WidgetProtocol {
             .foregroundStyle(jobDetail.status.pillTextColor)
             .padding(.vertical, 8)
             .padding(.horizontal, 14)
-            .overlay {
+            .background {
                 RoundedRectangle(cornerRadius: 100)
                     .fill(jobDetail.status.pillBackgroundColor)
             }
@@ -49,7 +49,7 @@ struct FabDetailsWidget: WidgetProtocol {
     private func individualJobDetail(for jobDetail: JobDetail) -> some View {
         let barCornerRadius: CGFloat = 100
         let barMaxHeight: CGFloat = 12
-        let percetComplete = (Double(jobDetail.ordersCompleted) / Double(jobDetail.ordersTotal)) * 100
+        let percetComplete = jobDetail.ordersTotal == 0 ? 0 : (Double(jobDetail.ordersCompleted) / Double(jobDetail.ordersTotal)) * 100
         
         return VStack {
             // item header
@@ -80,7 +80,7 @@ struct FabDetailsWidget: WidgetProtocol {
             // progress bar
             HStack{
                 GeometryReader { geo in
-                    let barSize = geo.size.width - 10
+                    let barSize = max(0, geo.size.width - 10)
                     
                     ZStack(alignment: .leading) {
                         GenericBar(
