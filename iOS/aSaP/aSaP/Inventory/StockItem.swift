@@ -30,14 +30,16 @@ struct StockItem: Identifiable {
         }
     }
     
-    var id: UUID = UUID()
-    var name: String // Ex: #8 Rebar (1")
-    var quantity: Double // Current inventory levels
-    var minimum: Double // Minimum amount requested
-    var level: InventoryLevel
+    private(set) var id: UUID = UUID()
+    private(set) var name: String // Ex: #8 Rebar (1")
+    private(set) var description: String
+    private(set) var quantity: Double // Current inventory levels
+    private(set) var minimum: Double // Minimum amount requested
+    private(set) var level: InventoryLevel
     
-    init(name: String, quantity: Double, minimum: Double) {
+    init(name: String, description: String, quantity: Double, minimum: Double) {
         self.name = name
+        self.description = description
         self.quantity = quantity
         self.minimum = minimum
         self.level = .warning
