@@ -26,22 +26,21 @@ class AppState {
     /// change, older saved layouts will no longer match the intended widgets, so a user could lose
     /// their saved order or favorite status for those widgets. :P
     private enum WidgetIDs {
-        static let inventoryPlaceholder = UUID(uuid: (
-            0x3C, 0x53, 0xD4, 0xAE, 0x30, 0x78, 0x43, 0xD2,
-            0xB3, 0x0E, 0x5D, 0xA9, 0x41, 0x7D, 0x5A, 0x70
-        ))
-        static let financialTestOne = UUID(uuid: (
-            0x46, 0x5C, 0xD2, 0x43, 0x6E, 0x33, 0x43, 0x82,
-            0x8E, 0x11, 0x87, 0x12, 0x05, 0x86, 0xE4, 0xA5
-        ))
-        static let financialTestTwo = UUID(uuid: (
-            0xA4, 0x82, 0xD2, 0x8C, 0x2F, 0xE1, 0x4D, 0x2F,
-            0xB6, 0x02, 0x3D, 0xA8, 0xC9, 0x71, 0x49, 0x35
-        ))
-        static let financialTestThree = UUID(uuid: (
-            0x87, 0x24, 0xDC, 0xE9, 0x4E, 0x53, 0x46, 0x1E,
-            0xAE, 0xFD, 0x4D, 0x48, 0xF4, 0x23, 0x0E, 0x3D
-        ))
+        /*
+         Optional Id section
+         run "uuidgen" in terminal to get a UUID, past when adding new value to the application
+         Example result
+         28FA5593-A92F-470A-993B-909801F28EAA
+         Then
+         static let exampleID = UUID(uuidString: "28FA5593-A92F-470A-993B-909801F28EAA")!
+         */
+        static let stockLevelsWidget = UUID(uuidString: "3A029128-E557-470E-955C-9FD5CBAD4A9A")!
+        static let fabDetailsWidget = UUID(uuidString: "1D62AF8C-4534-437B-9AE2-2A51C3618A2A")!
+        // ExampleWidgets
+        static let financialTestOne = UUID(uuidString: "558CA072-4DDB-4967-93B4-856D15DB190E")!
+        static let financialTestTwo = UUID(uuidString: "FA51C8C4-AD08-4F63-BC37-F2768108312A")!
+        static let financialTestThr = UUID(uuidString: "543721F1-578D-4B83-A5E6-B7C21FDC2CAF")!
+        
     }
     /// Local store for widget layout preferences.
     @ObservationIgnored private let userDefaults: UserDefaults
@@ -114,30 +113,48 @@ class AppState {
     
     private static func defaultPageList() -> [String: WidgetList] {
         /// This remains the source of available widgets; persistence only changes their order/favorite state.
-        [
-            AppVariables.PageKeys.inv : .init(items: [
-                StockLevelsWidget(id: WidgetIDs.inventoryPlaceholder)
-            ]),
-            AppVariables.PageKeys.fab : .init(items: []),
-            AppVariables.PageKeys.ship : .init(items: []),
-            AppVariables.PageKeys.fin : .init(items: [
-                ExampleWidget(
-                    id: WidgetIDs.financialTestOne,
-                    name: "TEST_One",
-                    isFavorite: false
-                ),
-                ExampleWidget(
-                    id: WidgetIDs.financialTestTwo,
-                    name: "TEST_Two",
-                    isFavorite: false
-                ),
-                ExampleWidget(
-                    id: WidgetIDs.financialTestThree,
-                    name: "TEST_Thr",
-                    isFavorite: false
-                )
-            ]),
-        ]
+        var pageList: [String: WidgetList] = [:]
+        
+        #if DEBUG
+            pageList = [
+                AppVariables.PageKeys.inv : .init(items: [
+                    StockLevelsWidget(id: WidgetIDs.stockLevelsWidget, stockItems: [
+                        StockItem(name: "#8 Rebar (1\")", quantity: 80.0, minimum: 100.0),
+                        StockItem(name: "#5 Rebar (5/8\")", quantity: 120.0, minimum: 100.0),
+                        StockItem(name: "#4 Rebar (1/2\")", quantity: 230.0, minimum: 100.0),
+                    ])
+                ]),
+                AppVariables.PageKeys.fab : .init(items: [
+                    FabDetailsWidget(id: WidgetIDs.fabDetailsWidget, jobDetails: [
+                        JobDetail(name: "J-2245", status: .atRisk,
+                            dueDate: "Jun 12", location: "Middletown Parking Garage", company: "Valley Structures", amountCompleted: 34.2, amountTotal: 84.2, ordersCompleted: 9, ordersTotal: 22
+                        ),
+                        JobDetail(name: "J-2233", status: .onTrack, dueDate: "Jun 12", location: "Small", company: "Really long smaller text to see contrast", amountCompleted: 30.0, amountTotal: 60.0, ordersCompleted: 15, ordersTotal: 30
+                        ),
+                        JobDetail(name: "J-2241", status: .scheduled, dueDate: "Jun 19", location: "Really long main text to check length amount", company: "Checking how overflow looks on the smaller bottom bar", amountCompleted: 0.0, amountTotal: 40.0, ordersCompleted: 0, ordersTotal: 10
+                        ),
+                        JobDetail(name: "J-2251", status: .completed, dueDate: "Jun 07", location: "Longer Main Text but not too long", company: "small", amountCompleted: 100.0, amountTotal: 100.0, ordersCompleted: 25, ordersTotal: 25
+                        )
+                    ])
+                ]),
+                AppVariables.PageKeys.ship : .init(items: []),
+                AppVariables.PageKeys.fin : .init(items: [
+                    ExampleWidget(id: WidgetIDs.financialTestOne, name: "TEST_One", isFavorite: false),
+                    ExampleWidget(id: WidgetIDs.financialTestTwo, name: "TEST_Two", isFavorite: false),
+                    ExampleWidget(id: WidgetIDs.financialTestThr, name: "TEST_Thr", isFavorite: false)
+                ]),
+            ]
+        #else
+        // Should be getting/building/refreshing widgets with API info when in prod
+            pageList = [
+                AppVariables.PageKeys.inv : .init(items: []),
+                AppVariables.PageKeys.fab : .init(items: []),
+                AppVariables.PageKeys.ship : .init(items: []),
+                AppVariables.PageKeys.fin : .init(items: []),
+            ]
+        #endif
+        
+        return pageList
     }
     
     /// Reorders current widgets using the saved layout without replacing the widgets themselves.

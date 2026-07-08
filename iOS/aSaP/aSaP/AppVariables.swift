@@ -14,4 +14,8 @@ struct AppVariables {
         static let ship: String = "shipping"
         static let fin: String = "financials"
     }
+    
+    struct widgetVariables {
+        static let leadingPadding: CGFloat = 8
+    }
 }
