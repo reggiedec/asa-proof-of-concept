@@ -36,14 +36,26 @@ struct OverviewMetric: Identifiable, Equatable {
 
 struct OverviewMetricBlock: View {
     let metric: OverviewMetric
+    @Binding private var status: OverviewMetric.Status
+    private let action: (OverviewMetric) -> Void
 
     private let cornerRadius: CGFloat = 6
     private let minHeight: CGFloat = 87
     private let horizontalPadding: CGFloat = 17
     private let verticalPadding: CGFloat = 17
 
+    init(
+        metric: OverviewMetric,
+        status: Binding<OverviewMetric.Status>? = nil,
+        action: @escaping (OverviewMetric) -> Void = { _ in }
+    ) {
+        self.metric = metric
+        self._status = status ?? .constant(metric.status)
+        self.action = action
+    }
+
     private var isCritical: Bool {
-        metric.status == .critical
+        status == .critical
     }
 
     private var primaryTextColor: Color {
@@ -55,64 +67,82 @@ struct OverviewMetricBlock: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(metric.title)
-                .font(Font.custom("BeVietnamPro-Medium", size: 10))
-                .tracking(1)
-                .foregroundStyle(secondaryTextColor)
-                .lineLimit(2)
-                .minimumScaleFactor(0.78)
+        Button {
+            action(metric)
+        } label: {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(metric.title)
+                    .font(Font.custom("BeVietnamPro-Medium", size: 10))
+                    .tracking(1)
+                    .foregroundStyle(secondaryTextColor)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.78)
 
-            Spacer(minLength: 0)
+                Spacer(minLength: 0)
 
-            HStack(alignment: .lastTextBaseline) {
-                Text(metric.value)
-                    .font(Font.custom("BeVietnamPro-Bold", size: 30))
-                    .foregroundStyle(primaryTextColor)
-                    .minimumScaleFactor(0.6)
-                    .lineLimit(1)
-
-                Spacer(minLength: 8)
-
-                if let actionTitle = metric.actionTitle {
-                    Text(actionTitle)
-                        .font(Font.custom("BeVietnamPro-SemiBold", size: 12))
+                HStack(alignment: .lastTextBaseline) {
+                    Text(metric.value)
+                        .font(Font.custom("BeVietnamPro-Bold", size: 30))
                         .foregroundStyle(primaryTextColor)
+                        .minimumScaleFactor(0.6)
                         .lineLimit(1)
+
+                    Spacer(minLength: 8)
+
+                    if let actionTitle = metric.actionTitle {
+                        Text(actionTitle)
+                            .font(Font.custom("BeVietnamPro-SemiBold", size: 12))
+                            .foregroundStyle(primaryTextColor)
+                            .lineLimit(1)
+                    }
+                }
+            }
+            .padding(.horizontal, horizontalPadding)
+            .padding(.vertical, verticalPadding)
+            .frame(maxWidth: .infinity, minHeight: minHeight, alignment: .leading)
+            .background {
+                if isCritical {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color("GradientRedStart"),
+                                    Color("GradientRedEnd")
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                } else {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color("BackgroundBlack"))
                 }
             }
         }
-        .padding(.horizontal, horizontalPadding)
-        .padding(.vertical, verticalPadding)
-        .frame(maxWidth: .infinity, minHeight: minHeight, alignment: .leading)
-        .background {
-            if isCritical {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color("GradientRedStart"),
-                                Color("GradientRedEnd")
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-            } else {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(Color("BackgroundBlack"))
-            }
-        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(metric.title), \(metric.value)")
+        .accessibilityValue(isCritical ? "Critical" : "Normal")
     }
 }
 
 struct OverviewMetricGrid: View {
     let metrics: [OverviewMetric]
+    private let action: (OverviewMetric) -> Void
+
+    init(
+        metrics: [OverviewMetric],
+        action: @escaping (OverviewMetric) -> Void = { _ in }
+    ) {
+        self.metrics = metrics
+        self.action = action
+    }
 
     private var columnCount: Int {
         switch metrics.count {
         case 0...1:
             return 1
+        case 3:
+            return 3
         default:
             return 2
         }
@@ -120,15 +150,15 @@ struct OverviewMetricGrid: View {
 
     private var columns: [GridItem] {
         Array(
-            repeating: GridItem(.flexible(), spacing: 15, alignment: .top),
+            repeating: GridItem(.flexible(), spacing: 12, alignment: .top),
             count: columnCount
         )
     }
 
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 15) {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
             ForEach(metrics) { metric in
-                OverviewMetricBlock(metric: metric)
+                OverviewMetricBlock(metric: metric, action: action)
             }
         }
     }

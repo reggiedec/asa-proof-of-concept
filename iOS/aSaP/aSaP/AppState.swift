@@ -26,13 +26,25 @@ class AppState {
     /// change, older saved layouts will no longer match the intended widgets, so a user could lose
     /// their saved order or favorite status for those widgets.
     private enum WidgetIDs {
+        static let inventoryOverview = UUID(uuid: (
+            0x71, 0x3A, 0x55, 0x42, 0xE1, 0x5D, 0x4B, 0x26,
+            0xAE, 0xC7, 0x5D, 0x63, 0x91, 0x1D, 0x9D, 0x9F
+        ))
         static let inventoryPlaceholder = UUID(uuid: (
             0x3C, 0x53, 0xD4, 0xAE, 0x30, 0x78, 0x43, 0xD2,
             0xB3, 0x0E, 0x5D, 0xA9, 0x41, 0x7D, 0x5A, 0x70
         ))
+        static let fabricationOverview = UUID(uuid: (
+            0x93, 0x6D, 0x06, 0xBD, 0xBA, 0x4B, 0x4C, 0x30,
+            0x82, 0xF7, 0x37, 0xD5, 0x98, 0x3A, 0x05, 0xC1
+        ))
         static let financialOverview = UUID(uuid: (
             0x46, 0x5C, 0xD2, 0x43, 0x6E, 0x33, 0x43, 0x82,
             0x8E, 0x11, 0x87, 0x12, 0x05, 0x86, 0xE4, 0xA5
+        ))
+        static let shippingOverview = UUID(uuid: (
+            0x28, 0xFA, 0x55, 0x93, 0xA9, 0x2F, 0x47, 0x0A,
+            0x99, 0x3B, 0x90, 0x98, 0x01, 0xF2, 0x8E, 0xAA
         ))
     }
     /// Local store for widget layout preferences.
@@ -108,10 +120,15 @@ class AppState {
         // This remains the source of available widgets; persistence only changes their order/favorite state.
         [
             AppVariables.PageKeys.inv : .init(items: [
+                InventoryOverviewWidget(id: WidgetIDs.inventoryOverview),
                 StockLevelsWidget(id: WidgetIDs.inventoryPlaceholder)
             ]),
-            AppVariables.PageKeys.fab : .init(items: []),
-            AppVariables.PageKeys.ship : .init(items: []),
+            AppVariables.PageKeys.fab : .init(items: [
+                FabricationOverviewWidget(id: WidgetIDs.fabricationOverview)
+            ]),
+            AppVariables.PageKeys.ship : .init(items: [
+                ShippingOverviewWidget(id: WidgetIDs.shippingOverview)
+            ]),
             AppVariables.PageKeys.fin : .init(items: [
                 FinancialOverviewWidget(id: WidgetIDs.financialOverview)
             ]),
