@@ -69,22 +69,20 @@ struct StockLevelsWidget: WidgetProtocol {
             }
         }()
         
+        
+        /// Breaks width of the bar into thirds to then figure out how large it should be as a whole
+        /// - Parameter width: width of the bar
+        /// - Returns: Value representing total length of the item
         func mainWidth(width: CGFloat) -> CGFloat {
-            // width * (1.0 / 3.0) * fillRatio is how I get first third, do this with percentage
-            // get overflow percentage % 100
             var remainder = overflowPercentage
             let third = width * (1.0 / 3.0)
             var barSize: CGFloat = third
             if overflowPercentage > 100 {
                 barSize += third
                 remainder -= 100
-                print("\(barSize)")
             }
-            print("\(width), \(third)")
-            print("\(remainder), \(overflowPercentage)")
             
             barSize += (third * (CGFloat(remainder) / 100))
-            print("\(barSize)\n")
             
             return barSize
         }
