@@ -65,6 +65,7 @@ struct EstimatesWidget: WidgetProtocol {
     let name: String = "Estimates"
     var isFavorite: Bool = false
     private(set) var estimates: [EstimateInformation]
+    private let maxScrollHeight: CGFloat = 300
     
     private func generatePill(estimate: EstimateInformation.EstimateStatus) -> some View {
         let (textColor, backgroundColor) = estimate.getLevelColors()
@@ -91,15 +92,18 @@ struct EstimatesWidget: WidgetProtocol {
                 // Main Text
                 Text(estimate.estimateName)
                     .font(.headingThree)
+                    .lineLimit(1)
                 // Company Name + Estimate Information
                 VStack(alignment: .leading, spacing: subInfoSpacing) {
                     Text(estimate.companyName)
                         .font(.subHeader)
-                        .foregroundStyle(.opacity(0.7)) // Cannot apply to the font style, needs to be done on Text items individually
+                        .lineLimit(1)
+                        .foregroundStyle(.opacity(AppVariables.widgetVariables.subHeadingOpacity)) // Cannot apply to the font style, needs to be done on Text items individually
                     
-                    Text("\(estimate.weight.formatted(.number.precision(.fractionLength(1)))) Tons | $\(estimate.value.formatted())")
+                    Text("\(estimate.weight.formatted(.number.precision(.fractionLength(1)))) Tons | \(estimate.value.formatted(.currency(code: "USD")))")
                         .font(.subHeader)
-                        .foregroundStyle(.opacity(0.7))
+                        .lineLimit(1)
+                        .foregroundStyle(.opacity(AppVariables.widgetVariables.subHeadingOpacity))
                 }
             }
             .padding(.leading, AppVariables.widgetVariables.leadingPadding)
@@ -114,6 +118,7 @@ struct EstimatesWidget: WidgetProtocol {
                 
                 Text(estimate.date)
                     .font(.subHeader)
+                    .lineLimit(1)
                     .foregroundStyle(.opacity(0.7))
                     .padding(.trailing, AppVariables.widgetVariables.leadingPadding) // works well!
             }
@@ -132,6 +137,7 @@ struct EstimatesWidget: WidgetProtocol {
                     }
                 }
             }
+            .frame(maxHeight: maxScrollHeight)
         }
     }
 }
