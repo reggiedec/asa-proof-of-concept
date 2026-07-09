@@ -19,7 +19,7 @@ struct ReorderableList: View {
     private let widgetCornerRadius: CGFloat = 24
     private let widgetPadding: CGFloat = 18
     private let widgetGap: CGFloat = 12 // Does not match Figma, 24 felt way too big
-    private let widgetMaxWidth: CGFloat = 370
+    private let widgetShadowColor = Color(red: 0.75, green: 0.77, blue: 0.76)
     
     init(widgets: WidgetList, pageKey: String? = nil) {
         self.widgets = widgets
@@ -56,12 +56,12 @@ struct ReorderableList: View {
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
                     .padding(widgetPadding)
-                    .frame(maxWidth: widgetMaxWidth, alignment: .topLeading)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                     .background(
                         RoundedRectangle(cornerRadius: widgetCornerRadius)
                             .fill(.white)
                             .shadow(
-                                color: Color(red: 0.75, green: 0.77, blue: 0.76),
+                                color: widgetShadowColor,
                                 radius: 3,
                                 x: 0,
                                 y: 2

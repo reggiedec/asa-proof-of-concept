@@ -121,7 +121,11 @@ class AppState {
         #if DEBUG
             pageList = [
                 AppVariables.PageKeys.inv : .init(items: [
-                    InventoryOverviewWidget(id: WidgetIDs.inventoryOverview),
+                    OverviewWidget(
+                        id: WidgetIDs.inventoryOverview,
+                        name: "Inventory Overview",
+                        metrics: inventoryOverviewMetrics()
+                    ),
                     StockLevelsWidget(id: WidgetIDs.stockLevelsWidget, stockItems: [
                         StockItem(name: "#8 Rebar (1\")", quantity: 80.0, minimum: 100.0),
                         StockItem(name: "#5 Rebar (5/8\")", quantity: 120.0, minimum: 100.0),
@@ -129,7 +133,11 @@ class AppState {
                     ])
                 ]),
                 AppVariables.PageKeys.fab : .init(items: [
-                    FabricationOverviewWidget(id: WidgetIDs.fabricationOverview),
+                    OverviewWidget(
+                        id: WidgetIDs.fabricationOverview,
+                        name: "Fabrication Overview",
+                        metrics: fabricationOverviewMetrics()
+                    ),
                     FabDetailsWidget(id: WidgetIDs.fabDetailsWidget, jobDetails: [
                         JobDetail(name: "J-2245", status: .atRisk,
                             dueDate: "Jun 12", location: "Middletown Parking Garage", company: "Valley Structures", amountCompleted: 34.2, amountTotal: 84.2, ordersCompleted: 9, ordersTotal: 22
@@ -143,10 +151,18 @@ class AppState {
                     ])
                 ]),
                 AppVariables.PageKeys.ship : .init(items: [
-                    ShippingOverviewWidget(id: WidgetIDs.shippingOverview)
+                    OverviewWidget(
+                        id: WidgetIDs.shippingOverview,
+                        name: "Shipping Overview",
+                        metrics: shippingOverviewMetrics()
+                    )
                 ]),
                 AppVariables.PageKeys.fin : .init(items: [
-                    FinancialOverviewWidget(id: WidgetIDs.financialOverview),
+                    OverviewWidget(
+                        id: WidgetIDs.financialOverview,
+                        name: "Financial Overview",
+                        metrics: financialOverviewMetrics()
+                    ),
                     ExampleWidget(id: WidgetIDs.financialTestOne, name: "TEST_One", isFavorite: false),
                     ExampleWidget(id: WidgetIDs.financialTestTwo, name: "TEST_Two", isFavorite: false),
                     ExampleWidget(id: WidgetIDs.financialTestThr, name: "TEST_Thr", isFavorite: false)
@@ -163,6 +179,39 @@ class AppState {
         #endif
         
         return pageList
+    }
+
+    private static func inventoryOverviewMetrics() -> [OverviewMetric] {
+        [
+            OverviewMetric(id: "sku-count", title: "# of SKUs", value: "10"),
+            OverviewMetric(id: "in-stock", title: "In Stock", value: "6"),
+            OverviewMetric(id: "inventory-alerts", title: "Alerts", value: "4", status: .critical, actionTitle: "View")
+        ]
+    }
+
+    private static func fabricationOverviewMetrics() -> [OverviewMetric] {
+        [
+            OverviewMetric(id: "active-jobs", title: "Active Jobs", value: "5"),
+            OverviewMetric(id: "machine-issues", title: "Machine Issues", value: "1", status: .critical, actionTitle: "View")
+        ]
+    }
+
+    private static func shippingOverviewMetrics() -> [OverviewMetric] {
+        [
+            OverviewMetric(id: "active-loads", title: "Active Loads", value: "43"),
+            OverviewMetric(id: "tonnage", title: "Tonnage", value: "1.8k"),
+            OverviewMetric(id: "in-transit", title: "In Transit", value: "8"),
+            OverviewMetric(id: "shipping-exceptions", title: "Shipping Exceptions", value: "3", status: .critical, actionTitle: "View")
+        ]
+    }
+
+    private static func financialOverviewMetrics() -> [OverviewMetric] {
+        [
+            OverviewMetric(id: "cash-on-hand", title: "Cash on Hand", value: "$387k"),
+            OverviewMetric(id: "accounts-payable", title: "Accounts Payable", value: "$125k", status: .critical, actionTitle: "View"),
+            OverviewMetric(id: "total-weekly-sales", title: "Total Weekly Sales", value: "$352k"),
+            OverviewMetric(id: "accounts-receivable", title: "Accounts Receivable", value: "$113k", status: .critical, actionTitle: "View")
+        ]
     }
     
     /// Reorders current widgets using the saved layout without replacing the widgets themselves.
