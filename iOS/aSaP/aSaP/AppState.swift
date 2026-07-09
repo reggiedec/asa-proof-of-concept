@@ -40,6 +40,7 @@ class AppState {
         static let financialTestOne = UUID(uuidString: "558CA072-4DDB-4967-93B4-856D15DB190E")!
         static let financialTestTwo = UUID(uuidString: "FA51C8C4-AD08-4F63-BC37-F2768108312A")!
         static let financialTestThr = UUID(uuidString: "543721F1-578D-4B83-A5E6-B7C21FDC2CAF")!
+        static let estimatesWidget = UUID(uuidString: "B94BBD2D-D458-49AE-8E96-D8A1B76E7A58")!
         
     }
     /// Local store for widget layout preferences.
@@ -140,8 +141,12 @@ class AppState {
                 AppVariables.PageKeys.ship : .init(items: []),
                 AppVariables.PageKeys.fin : .init(items: [
                     ExampleWidget(id: WidgetIDs.financialTestOne, name: "TEST_One", isFavorite: false),
-                    ExampleWidget(id: WidgetIDs.financialTestTwo, name: "TEST_Two", isFavorite: false),
-                    ExampleWidget(id: WidgetIDs.financialTestThr, name: "TEST_Thr", isFavorite: false)
+                    EstimatesWidget(id: WidgetIDs.estimatesWidget, estimates: [
+                        .init(estimateName: "Estimate Name", companyName: "Company Name", date: "Date", weight: 1_000_000, value: 1_000_000, estimateStatus: .won),
+                        .init(estimateName: "Estimate Name", companyName: "Company Name", date: "Date", weight: 1_000_000, value: 1_000_000, estimateStatus: .submitted),
+                        .init(estimateName: "Estimate Name", companyName: "Company Name", date: "Date", weight: 1_000_000, value: 1_000_000, estimateStatus: .open),
+                        .init(estimateName: "Estimate Name", companyName: "Company Name", date: "Date", weight: 1_000_000, value: 1_000_000, estimateStatus: .lost),
+                    ])
                 ]),
             ]
         #else
