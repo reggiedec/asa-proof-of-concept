@@ -19,10 +19,10 @@ struct FavoriteGuideWidget: View {
         VStack {
             Spacer()
             Text("No Widgets Favorited")
-                .font(Font.custom("BeVietnamPro-Regular", size: 20))
+                .font(.headingTwo)
             Spacer()
             Text("Favorite some widgets to customize your home page")
-                .font(Font.custom("BeVietnamPro-Regular", size: 14))
+                .font(.regularFourteen)
                 .multilineTextAlignment(.center)
             Spacer()
             Button {
@@ -30,7 +30,7 @@ struct FavoriteGuideWidget: View {
                 favoriteGuide = true
             } label: {
                Text("Add Widgets")
-                    .font(Font.custom("BeVietnamPro-Regular", size: 12))
+                    .font(.subHeader)
                     .foregroundColor(.white)
                     .padding(.vertical, 6)
                     .padding(.horizontal, 12)
@@ -39,9 +39,9 @@ struct FavoriteGuideWidget: View {
                             .fill(
                                 LinearGradient(
                                     colors: [
-                                        Color("BlueGradient").opacity(0.7),
-                                        Color("BlueGradient"),
-                                        Color("BlueGradient")
+                                        .blueGradient.opacity(0.7),
+                                        .blueGradient,
+                                        .blueGradient
                                     ],
                                     startPoint: .top,
                                     endPoint: .bottom

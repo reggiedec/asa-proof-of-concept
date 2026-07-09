@@ -127,9 +127,9 @@ class AppState {
                         metrics: inventoryOverviewMetrics()
                     ),
                     StockLevelsWidget(id: WidgetIDs.stockLevelsWidget, stockItems: [
-                        StockItem(name: "#8 Rebar (1\")", quantity: 80.0, minimum: 100.0),
-                        StockItem(name: "#5 Rebar (5/8\")", quantity: 120.0, minimum: 100.0),
-                        StockItem(name: "#4 Rebar (1/2\")", quantity: 230.0, minimum: 100.0),
+                        StockItem(name: "RB0360", description: "Rebar Black #3 Grade 60", quantity: 80.0, minimum: 100.0),
+                        StockItem(name: "#5 Rebar (5/8\")", description: "Rebar Black #3 Grade 60", quantity: 120.0, minimum: 100.0),
+                        StockItem(name: "#4 Rebar (1/2\")", description: "Rebar Black #3 Grade 60", quantity: 230.0, minimum: 100.0),
                     ])
                 ]),
                 AppVariables.PageKeys.fab : .init(items: [
