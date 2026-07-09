@@ -24,7 +24,7 @@ class AppState {
     ///
     /// Persistence restores layout by matching saved UUIDs to the current widgets. If these values
     /// change, older saved layouts will no longer match the intended widgets, so a user could lose
-    /// their saved order or favorite status for those widgets. :P
+    /// their saved order or favorite status for those widgets.
     private enum WidgetIDs {
         /*
          Optional Id section
@@ -34,13 +34,16 @@ class AppState {
          Then
          static let exampleID = UUID(uuidString: "28FA5593-A92F-470A-993B-909801F28EAA")!
          */
+        static let inventoryOverview = UUID(uuidString: "713A5542-E15D-4B26-AEC7-5D63911D9D9F")!
         static let stockLevelsWidget = UUID(uuidString: "3A029128-E557-470E-955C-9FD5CBAD4A9A")!
+        static let fabricationOverview = UUID(uuidString: "936D06BD-BA4B-4C30-82F7-37D5983A05C1")!
         static let fabDetailsWidget = UUID(uuidString: "1D62AF8C-4534-437B-9AE2-2A51C3618A2A")!
+        static let shippingOverview = UUID(uuidString: "28FA5593-A92F-470A-993B-909801F28EAA")!
+        static let financialOverview = UUID(uuidString: "465CD243-6E33-4382-8E11-87120586E4A5")!
         // ExampleWidgets
         static let financialTestOne = UUID(uuidString: "558CA072-4DDB-4967-93B4-856D15DB190E")!
         static let financialTestTwo = UUID(uuidString: "FA51C8C4-AD08-4F63-BC37-F2768108312A")!
         static let financialTestThr = UUID(uuidString: "543721F1-578D-4B83-A5E6-B7C21FDC2CAF")!
-        
     }
     /// Local store for widget layout preferences.
     @ObservationIgnored private let userDefaults: UserDefaults
@@ -52,7 +55,7 @@ class AppState {
         }
     }
     var favoriteList: WidgetList {
-        /// Build Home favorites from current page lists so the displayed widgets are never duplicated.
+        // Build Home favorites from current page lists so the displayed widgets are never duplicated.
         let favorites = Self.pageOrder
             .compactMap { pageList[$0] }
             .flatMap { $0.items }
@@ -72,7 +75,7 @@ class AppState {
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         
-        /// Recreate the current widgets first, then layer the user's saved layout onto them.
+        // Recreate the current widgets first, then layer the user's saved layout onto them.
         let savedLayout = Self.loadLayout(from: userDefaults)
         favoriteIDs = Set(savedLayout?.favoriteIDs ?? [])
         pageList = Self.applySavedOrder(
@@ -89,7 +92,7 @@ class AppState {
         } else {
             let newPage = WidgetList(items: [])
             pageList[page] = newPage
-            /// Persist newly discovered pages so future launches keep the same page structure.
+            // Persist newly discovered pages so future launches keep the same page structure.
             saveLayout()
             return newPage
         }
@@ -99,7 +102,7 @@ class AppState {
         guard let list = pageList[page] else { return }
         
         list.move(from: source, to: destination)
-        /// Save immediately after drag reordering so the next launch restores this order.
+        // Save immediately after drag reordering so the next launch restores this order.
         saveLayout()
     }
     
@@ -112,12 +115,17 @@ class AppState {
     }
     
     private static func defaultPageList() -> [String: WidgetList] {
-        /// This remains the source of available widgets; persistence only changes their order/favorite state.
+        // This remains the source of available widgets; persistence only changes their order/favorite state.
         var pageList: [String: WidgetList] = [:]
         
         #if DEBUG
             pageList = [
                 AppVariables.PageKeys.inv : .init(items: [
+                    OverviewWidget(
+                        id: WidgetIDs.inventoryOverview,
+                        name: "Inventory Overview",
+                        metrics: inventoryOverviewMetrics()
+                    ),
                     StockLevelsWidget(id: WidgetIDs.stockLevelsWidget, stockItems: [
                         StockItem(name: "#8 Rebar (1\")", quantity: 80.0, minimum: 100.0),
                         StockItem(name: "#5 Rebar (5/8\")", quantity: 120.0, minimum: 100.0),
@@ -125,6 +133,11 @@ class AppState {
                     ])
                 ]),
                 AppVariables.PageKeys.fab : .init(items: [
+                    OverviewWidget(
+                        id: WidgetIDs.fabricationOverview,
+                        name: "Fabrication Overview",
+                        metrics: fabricationOverviewMetrics()
+                    ),
                     FabDetailsWidget(id: WidgetIDs.fabDetailsWidget, jobDetails: [
                         JobDetail(name: "J-2245", status: .atRisk,
                             dueDate: "Jun 12", location: "Middletown Parking Garage", company: "Valley Structures", amountCompleted: 34.2, amountTotal: 84.2, ordersCompleted: 9, ordersTotal: 22
@@ -137,8 +150,19 @@ class AppState {
                         )
                     ])
                 ]),
-                AppVariables.PageKeys.ship : .init(items: []),
+                AppVariables.PageKeys.ship : .init(items: [
+                    OverviewWidget(
+                        id: WidgetIDs.shippingOverview,
+                        name: "Shipping Overview",
+                        metrics: shippingOverviewMetrics()
+                    )
+                ]),
                 AppVariables.PageKeys.fin : .init(items: [
+                    OverviewWidget(
+                        id: WidgetIDs.financialOverview,
+                        name: "Financial Overview",
+                        metrics: financialOverviewMetrics()
+                    ),
                     ExampleWidget(id: WidgetIDs.financialTestOne, name: "TEST_One", isFavorite: false),
                     ExampleWidget(id: WidgetIDs.financialTestTwo, name: "TEST_Two", isFavorite: false),
                     ExampleWidget(id: WidgetIDs.financialTestThr, name: "TEST_Thr", isFavorite: false)
@@ -155,6 +179,39 @@ class AppState {
         #endif
         
         return pageList
+    }
+
+    private static func inventoryOverviewMetrics() -> [OverviewMetric] {
+        [
+            OverviewMetric(id: "sku-count", title: "# of SKUs", value: "10"),
+            OverviewMetric(id: "in-stock", title: "In Stock", value: "6"),
+            OverviewMetric(id: "inventory-alerts", title: "Alerts", value: "4", status: .critical, actionTitle: "View")
+        ]
+    }
+
+    private static func fabricationOverviewMetrics() -> [OverviewMetric] {
+        [
+            OverviewMetric(id: "active-jobs", title: "Active Jobs", value: "5"),
+            OverviewMetric(id: "machine-issues", title: "Machine Issues", value: "1", status: .critical, actionTitle: "View")
+        ]
+    }
+
+    private static func shippingOverviewMetrics() -> [OverviewMetric] {
+        [
+            OverviewMetric(id: "active-loads", title: "Active Loads", value: "43"),
+            OverviewMetric(id: "tonnage", title: "Tonnage", value: "1.8k"),
+            OverviewMetric(id: "in-transit", title: "In Transit", value: "8"),
+            OverviewMetric(id: "shipping-exceptions", title: "Shipping Exceptions", value: "3", status: .critical, actionTitle: "View")
+        ]
+    }
+
+    private static func financialOverviewMetrics() -> [OverviewMetric] {
+        [
+            OverviewMetric(id: "cash-on-hand", title: "Cash on Hand", value: "$387k"),
+            OverviewMetric(id: "accounts-payable", title: "Accounts Payable", value: "$125k", status: .critical, actionTitle: "View"),
+            OverviewMetric(id: "total-weekly-sales", title: "Total Weekly Sales", value: "$352k"),
+            OverviewMetric(id: "accounts-receivable", title: "Accounts Receivable", value: "$113k", status: .critical, actionTitle: "View")
+        ]
     }
     
     /// Reorders current widgets using the saved layout without replacing the widgets themselves.
@@ -177,7 +234,7 @@ class AppState {
             let widgetsByID = Dictionary(uniqueKeysWithValues: widgetList.items.map { ($0.id, $0) })
             var orderedWidgets = savedIDs.compactMap { widgetsByID[$0] }
             let orderedIDs = Set(orderedWidgets.map(\.id))
-            /// Append new widgets that were not present when the layout was last saved.
+            // Append new widgets that were not present when the layout was last saved.
             let newWidgets = widgetList.items.filter { !orderedIDs.contains($0.id) }
             
             orderedWidgets.append(contentsOf: newWidgets)
@@ -194,7 +251,7 @@ class AppState {
     }
     
     private func saveLayout() {
-        /// Store compact IDs instead of widget objects because widget content can be refreshed separately.
+        // Store compact IDs instead of widget objects because widget content can be refreshed separately.
         let pageOrder = pageList.mapValues { widgetList in
             widgetList.items.map(\.id)
         }
@@ -208,7 +265,7 @@ class AppState {
     }
     
     private func applyFavoriteStatus() {
-        /// Mirror the saved favorite set back onto each widget for code that reads isFavorite directly.
+        // Mirror the saved favorite set back onto each widget for code that reads isFavorite directly.
         for page in pageList.keys {
             guard let items = pageList[page]?.items else { continue }
             
