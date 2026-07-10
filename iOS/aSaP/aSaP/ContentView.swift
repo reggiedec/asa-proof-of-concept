@@ -10,13 +10,15 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTab = 0
     @State private var favoriteGuide: Bool = false
+    @State private var selectedLocationCount = 6
 
     var body: some View {
         TabView(selection: $selectedTab) {
             // MARK: Home
             NavigationStack {
-                HomeView(selectedTab: $selectedTab, favoriteGuide: $favoriteGuide)
-                    .navigationTitle(Text("Home")) // Top header if wanted
+                pageContent(title: "Home") {
+                    HomeView(selectedTab: $selectedTab, favoriteGuide: $favoriteGuide)
+                }
             }
             .tabItem {
                 Label("Home", systemImage: "house.fill") //icons present in SF Symbols, should be able to upload our own images too
@@ -25,7 +27,9 @@ struct ContentView: View {
             
             // MARK: Inventory
             NavigationStack {
-                InventoryView(favoriteGuide: $favoriteGuide)
+                pageContent(title: "Inventory") {
+                    InventoryView(favoriteGuide: $favoriteGuide)
+                }
             }
             .tabItem {
                 Label("Inventory", systemImage: "shippingbox.fill")
@@ -34,7 +38,9 @@ struct ContentView: View {
             
             // MARK: Fabrication
             NavigationStack {
-                FabricationView()
+                pageContent(title: "Fabrication") {
+                    FabricationView()
+                }
             }
             .tabItem {
                 Label("Fabrication", systemImage: "scissors")
@@ -43,7 +49,9 @@ struct ContentView: View {
             
             // MARK: Shipping
             NavigationStack {
-               ShippingView()
+                pageContent(title: "Shipping") {
+                    ShippingView()
+                }
             }
             .tabItem {
                 Label("Shipping", systemImage: "truck.box.fill")
@@ -52,13 +60,116 @@ struct ContentView: View {
             
             // MARK: Financials
             NavigationStack {
-                FinancialsView()
+                pageContent(title: "Financials") {
+                    FinancialsView()
+                }
             }
             .tabItem {
                 Label("Financials", systemImage: "dollarsign")
             }
             .tag(4)
         }
+    }
+
+    private func pageContent<Content: View>(
+        title: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        content()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color("BackgroundColor"))
+            .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                PageHeader(
+                    title: title,
+                    selectedLocationCount: selectedLocationCount
+                )
+            }
+    }
+}
+
+private struct PageHeader: View {
+    let title: String
+    let selectedLocationCount: Int
+
+    private let horizontalPadding: CGFloat = 28
+    private let topPadding: CGFloat = 24
+    private let bottomPadding: CGFloat = 16
+    private let titleColor = Color(red: 0.07, green: 0.09, blue: 0.15)
+
+    var body: some View {
+        HStack(alignment: .center) {
+            Text(title)
+                .font(Font.custom("BeVietnamPro-Bold", size: 22))
+                .foregroundStyle(titleColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
+            Spacer(minLength: 12)
+
+            PageHeaderControls(selectedLocationCount: selectedLocationCount)
+        }
+        .padding(.horizontal, horizontalPadding)
+        .padding(.top, topPadding)
+        .padding(.bottom, bottomPadding)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .background(.white)
+    }
+}
+
+private struct PageHeaderControls: View {
+    let selectedLocationCount: Int
+
+    private let controlBackground = Color("BackgroundBlack")
+
+    var body: some View {
+        HStack(spacing: 12) {
+            locationsButton
+            notificationsButton
+        }
+    }
+
+    private var locationsButton: some View {
+        Button {
+            // TODO: Wire this to location selection once Dalton's sheet flow is merged.
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "mappin.circle")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color("BlueGradient"))
+
+                Text("\(selectedLocationCount) Locations")
+                    .font(Font.custom("BeVietnamPro-Medium", size: 11))
+                    .foregroundStyle(Color("CharcoalBlack"))
+
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(Color("CharcoalBlack"))
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background {
+                Capsule()
+                    .fill(controlBackground)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var notificationsButton: some View {
+        Button {
+            // TODO: Wire this to notifications once that page exists.
+        } label: {
+            Image(systemName: "bell")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Color("CharcoalBlack"))
+                .frame(width: 32, height: 32)
+                .background {
+                    Circle()
+                        .fill(controlBackground)
+                }
+        }
+        .buttonStyle(.plain)
     }
 }
 
