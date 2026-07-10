@@ -49,6 +49,12 @@ class AppState {
     }
     /// Local store for widget layout preferences.
     @ObservationIgnored private let userDefaults: UserDefaults
+    
+    /// Stores selected locations, as strings so when the location selector sheet is dismissed it can refetch data for only those desired locations
+    /// Is a string rather than UUID so that the API can use the values directly from here (hopefully) 
+    var selectedLocationIDs: Set<String> = []
+    var locations: [FabLocation] = fetchFabLocations() // probably not the best thing to do 
+    
     var pageList: [String: WidgetList]
     var favoriteIDs: Set<UUID> {
         didSet {
@@ -282,4 +288,23 @@ class AppState {
             }
         }
     }
+    
+    private static func fetchFabLocations() -> [FabLocation] {
+        #if DEBUG
+        let midwest = Region(name: "Midwest")
+        return [
+            .init(name: "Austin Plant", location: "Austin, TX"),
+            .init(name: "Phoenix Plant", location: "Phoenix, AZ"),
+            .init(name: "Denver Plant", location: "Denver, CO"),
+            .init(name: "Detroit Plant", location: "Detroit, MI", region: midwest),
+            .init(name: "Chicago Plant", location: "Chicago, IL", region: midwest),
+            .init(name: "St. Louis Plant", location: "St. Louis, MO", region: midwest),
+        ]
+        #else
+        // fetch from DB and process
+        return []
+        #endif
+        
+    }
+    
 }
