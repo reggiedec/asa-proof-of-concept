@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(AppState.self) private var appState
     @State private var selectedTab = 0
     @State private var favoriteGuide: Bool = false
+    @State private var showNotifications: Bool = false
+    @State private var showLocationSettings: Bool = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -59,6 +62,16 @@ struct ContentView: View {
             }
             .tag(4)
         }
+        .sheet(isPresented: $showNotifications){
+            
+        }
+        .sheet(isPresented: $showLocationSettings, onDismiss: {
+            // Fetch new API data w/ new saved locations in AppState
+        }) {
+            LocationSelector(locations: appState.locations, showLocations: $showLocationSettings)
+                .presentationDragIndicator(.visible)
+        }
+        
     }
 }
 
