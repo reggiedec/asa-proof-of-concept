@@ -46,7 +46,7 @@ extension Font {
     static let barGraphTons: Font = .beVietnam(.semiBold, size: 10)
     static let progressBarInfo: Font = .beVietnam(.bold, size: 14)
     static let bigBoldDetail:Font = .beVietnam(.bold, size: 20)
-    static let thinSubheader:Font = .beVietnam(.regular, size: 10)
+    static let thinSubheader:Font = .beVietnam(.regular, size: 12)
     static let semiBoldSubheader:Font = .beVietnam(.semiBold, size: 12)
     static let tinyPillText:Font = .beVietnam(.semiBold, size: 14)
     static let progressBarDescriptionText:Font = .beVietnam(.regular, size: 16)
