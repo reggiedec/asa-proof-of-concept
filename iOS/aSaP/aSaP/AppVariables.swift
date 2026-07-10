@@ -13,6 +13,7 @@ struct AppVariables {
         static let fab: String = "fabrication"
         static let ship: String = "shipping"
         static let fin: String = "financials"
+        static let home: String = "favorites"
     }
     
     struct widgetVariables {
