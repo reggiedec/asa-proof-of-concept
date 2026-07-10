@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(AppState.self) private var appState
     @State private var selectedTab = 0
     @State private var favoriteGuide: Bool = false
-    @State private var selectedLocationCount = 6
+    @State private var showNotifications: Bool = false
+    @State private var showLocationSettings: Bool = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -24,7 +26,7 @@ struct ContentView: View {
                 Label("Home", systemImage: "house.fill") //icons present in SF Symbols, should be able to upload our own images too
             }
             .tag(0)
-            
+
             // MARK: Inventory
             NavigationStack {
                 pageContent(title: "Inventory") {
@@ -35,7 +37,7 @@ struct ContentView: View {
                 Label("Inventory", systemImage: "shippingbox.fill")
             }
             .tag(1)
-            
+
             // MARK: Fabrication
             NavigationStack {
                 pageContent(title: "Fabrication") {
@@ -46,7 +48,7 @@ struct ContentView: View {
                 Label("Fabrication", systemImage: "scissors")
             }
             .tag(2)
-            
+
             // MARK: Shipping
             NavigationStack {
                 pageContent(title: "Shipping") {
@@ -57,7 +59,7 @@ struct ContentView: View {
                 Label("Shipping", systemImage: "truck.box.fill")
             }
             .tag(3)
-            
+
             // MARK: Financials
             NavigationStack {
                 pageContent(title: "Financials") {
@@ -69,6 +71,16 @@ struct ContentView: View {
             }
             .tag(4)
         }
+        .sheet(isPresented: $showNotifications){
+
+        }
+        .sheet(isPresented: $showLocationSettings, onDismiss: {
+            // Fetch new API data w/ new saved locations in AppState
+        }) {
+            LocationSelector(locations: appState.locations, showLocations: $showLocationSettings)
+                .presentationDragIndicator(.visible)
+        }
+
     }
 
     private func pageContent<Content: View>(
@@ -82,7 +94,13 @@ struct ContentView: View {
             .safeAreaInset(edge: .top, spacing: 0) {
                 PageHeader(
                     title: title,
-                    selectedLocationCount: selectedLocationCount
+                    selectedLocationCount: appState.selectedLocationIDs.count,
+                    onLocationTap: {
+                        showLocationSettings = true
+                    },
+                    onNotificationsTap: {
+                        showNotifications = true
+                    }
                 )
             }
     }
@@ -91,6 +109,8 @@ struct ContentView: View {
 private struct PageHeader: View {
     let title: String
     let selectedLocationCount: Int
+    let onLocationTap: () -> Void
+    let onNotificationsTap: () -> Void
 
     private let horizontalPadding: CGFloat = 28
     private let topPadding: CGFloat = 24
@@ -107,7 +127,11 @@ private struct PageHeader: View {
 
             Spacer(minLength: 12)
 
-            PageHeaderControls(selectedLocationCount: selectedLocationCount)
+            PageHeaderControls(
+                selectedLocationCount: selectedLocationCount,
+                onLocationTap: onLocationTap,
+                onNotificationsTap: onNotificationsTap
+            )
         }
         .padding(.horizontal, horizontalPadding)
         .padding(.top, topPadding)
@@ -119,6 +143,8 @@ private struct PageHeader: View {
 
 private struct PageHeaderControls: View {
     let selectedLocationCount: Int
+    let onLocationTap: () -> Void
+    let onNotificationsTap: () -> Void
 
     private let controlBackground = Color("BackgroundBlack")
 
@@ -130,9 +156,7 @@ private struct PageHeaderControls: View {
     }
 
     private var locationsButton: some View {
-        Button {
-            // TODO: Wire this to location selection once Dalton's sheet flow is merged.
-        } label: {
+        Button(action: onLocationTap) {
             HStack(spacing: 6) {
                 Image(systemName: "mappin.circle")
                     .font(.system(size: 15, weight: .medium))
@@ -157,9 +181,7 @@ private struct PageHeaderControls: View {
     }
 
     private var notificationsButton: some View {
-        Button {
-            // TODO: Wire this to notifications once that page exists.
-        } label: {
+        Button(action: onNotificationsTap) {
             Image(systemName: "bell")
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(Color("CharcoalBlack"))
@@ -175,7 +197,7 @@ private struct PageHeaderControls: View {
 
 #Preview {
     @Previewable @State var appState = AppState()
-    
+
     ContentView()
         .environment(appState)
 }
