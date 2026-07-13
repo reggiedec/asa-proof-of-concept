@@ -26,7 +26,7 @@ struct PageHeader: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
 
-            Spacer(minLength: 12)
+            Spacer()
 
             PageHeaderControls(
                 selectedLocationCount: selectedLocationCount,
@@ -51,6 +51,7 @@ private struct PageHeaderControls: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            Spacer()
             locationsButton
             notificationsButton
         }
@@ -64,7 +65,7 @@ private struct PageHeaderControls: View {
                     .foregroundStyle(Color("BlueGradient"))
 
                 Text("\(selectedLocationCount) Locations")
-                    .font(Font.custom("BeVietnamPro-Medium", size: 11))
+                    .font(.subHeader)
                     .foregroundStyle(Color("CharcoalBlack"))
 
                 Image(systemName: "chevron.down")

@@ -127,18 +127,16 @@ struct EstimatesWidget: WidgetProtocol {
     
     var body: some View {
         ScrollView { // Should allow for scrolling once __ limit is reached on VStack Height
-            VStack {
-                ForEach(Array(estimates.enumerated()), id: \.element.id) { index, estimate in
-                    estimateContent(estimate: estimate)
-                        .padding(.bottom, 12)
-                        .padding(.top, 6)
-                    if index < estimates.count - 1 {
-                        Divider()
-                    }
+            ForEach(Array(estimates.enumerated()), id: \.element.id) { index, estimate in
+                estimateContent(estimate: estimate)
+                    .padding(.bottom, 12)
+                    .padding(.top, 6)
+                if index < estimates.count - 1 {
+                    Divider()
                 }
             }
-            .frame(maxHeight: maxScrollHeight)
         }
+        .frame(maxHeight: maxScrollHeight)
     }
 }
 

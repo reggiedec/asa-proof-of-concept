@@ -18,7 +18,7 @@ struct ReorderableList: View {
     // Variables
     private let widgetCornerRadius: CGFloat = 24
     private let widgetPadding: CGFloat = 18
-    private let widgetGap: CGFloat = 12 // Does not match Figma, 24 felt way too big
+    private let widgetGap: CGFloat = 24 // Does not match Figma, 24 felt way too big
     private let widgetShadowColor = Color(red: 0.75, green: 0.77, blue: 0.76)
     
     init(widgets: WidgetList, pageKey: String? = nil) {
@@ -67,7 +67,7 @@ struct ReorderableList: View {
                                 y: 2
                             )
                     )
-                    .padding(.vertical, widgetGap)
+                    .padding(.bottom, widgetGap)
             }
             .onMove { source, destination in
                 if let pageKey {

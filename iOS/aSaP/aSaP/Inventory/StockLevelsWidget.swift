@@ -163,17 +163,19 @@ struct StockLevelsWidget: WidgetProtocol {
         let quantity = item.quantity
         
         return VStack {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
+            VStack(alignment: .leading) {
+                HStack() {
                     Text(item.name)
                         .font(.bigBoldDetail)
                         .padding(.bottom, 3)
-                    Text(item.description)
-                        .font(.progressBarDescriptionText)
+                    Spacer()
+                    overflowPill(stockItem: item)
                 }
-                Spacer()
-                overflowPill(stockItem: item)
+                Text(item.description)
+                    .font(.progressBarDescriptionText)
+                    .foregroundStyle(.charcoalBlack.opacity(AppVariables.widgetVariables.subHeadingOpacity))
             }
+            Spacer()
             progressBar(stockItem: item)
             HStack {
                 Spacer()
@@ -185,9 +187,13 @@ struct StockLevelsWidget: WidgetProtocol {
     }
     
     var body: some View {
-        ForEach(stockItems) { item in
+        ForEach(Array(stockItems.enumerated()), id: \.element.id) { index, item in
             generateStockItemVisual(item: item)
                 .padding(.bottom, 30)
+            
+            if (index < stockItems.count - 1) {
+                Divider()
+            }
         }
     }
 }
