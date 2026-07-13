@@ -45,6 +45,7 @@ class AppState {
         static let financialTestTwo = UUID(uuidString: "FA51C8C4-AD08-4F63-BC37-F2768108312A")!
         static let financialTestThr = UUID(uuidString: "543721F1-578D-4B83-A5E6-B7C21FDC2CAF")!
         static let estimatesWidget = UUID(uuidString: "B94BBD2D-D458-49AE-8E96-D8A1B76E7A58")!
+        static let financialDetailsWidget = UUID(uuidString: "33744243-1D55-46CC-AC7A-30F6A33F4AA9")!
         
     }
     /// Local store for widget layout preferences.
@@ -166,6 +167,11 @@ class AppState {
                     )
                 ]),
                 AppVariables.PageKeys.fin : .init(items: [
+                    FinancialSummaryWidget(id: WidgetIDs.financialDetailsWidget, information: [
+                        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .positive, colorScheme: .positive)),
+                        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .negative, colorScheme: .negative)),
+                        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .neutral, colorScheme: .neutral))
+                    ]),
                     OverviewWidget(
                         id: WidgetIDs.financialOverview,
                         name: "Financial Overview",
