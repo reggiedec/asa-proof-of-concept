@@ -101,7 +101,13 @@ struct ContentView: View {
                     onNotificationsTap: {
                         showNotifications = true
                     }
-                )
+                ) {
+                    if title == "Home" {
+                        UserAvatarBubble(initials: "JD")
+                    } else {
+                        PageHeaderTitle(title: title)
+                    }
+                }
             }
     }
 }
