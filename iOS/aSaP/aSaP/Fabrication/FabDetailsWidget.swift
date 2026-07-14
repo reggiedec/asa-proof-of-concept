@@ -120,9 +120,13 @@ struct FabDetailsWidget: WidgetProtocol {
         }
         return ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                ForEach(sortedJobs) { job in
+                ForEach(Array(sortedJobs.enumerated()), id: \.element.id) { index, job in
                     individualJobDetail(for: job)
                         .padding(.vertical, 8)
+                    
+                    if (index < sortedJobs.count - 1) {
+                            Divider()
+                    }
                 }
             }
         }
