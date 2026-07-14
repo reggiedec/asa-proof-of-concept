@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct PageHeader: View {
-    let title: String
     let selectedLocationCount: Int
     let onLocationTap: () -> Void
     let onNotificationsTap: () -> Void
@@ -16,17 +15,12 @@ struct PageHeader: View {
     private let horizontalPadding: CGFloat = 28
     private let topPadding: CGFloat = 24
     private let bottomPadding: CGFloat = 16
-    private let titleColor = Color(red: 0.07, green: 0.09, blue: 0.15)
 
     var body: some View {
         HStack(alignment: .center) {
-            Text(title)
-                .font(Font.custom("BeVietnamPro-Bold", size: 22))
-                .foregroundStyle(titleColor)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
+            userBubble
 
-            Spacer(minLength: 12)
+            Spacer()
 
             PageHeaderControls(
                 selectedLocationCount: selectedLocationCount,
@@ -39,6 +33,27 @@ struct PageHeader: View {
         .padding(.bottom, bottomPadding)
         .frame(maxWidth: .infinity, alignment: .center)
         .background(.white)
+    }
+
+    private var userBubble: some View {
+        Text("JD")
+            .font(Font.custom("BeVietnamPro-Bold", size: 11))
+            .foregroundStyle(.white)
+            .frame(width: 32, height: 32)
+            .background {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color("BlueGradient").opacity(0.7),
+                                Color("BlueGradient")
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+            }
+            .accessibilityLabel("User profile")
     }
 }
 
