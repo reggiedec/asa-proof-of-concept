@@ -36,7 +36,7 @@ struct FabDetailsWidget: WidgetProtocol {
                     Text(jobDetail.status.pillDescription)
                 }
             }
-            .font(Font.custom("BeVietnamPro-SemiBold", size: 12))
+            .font(.progressTiny)
             .foregroundStyle(jobDetail.status.pillTextColor)
             .padding(.vertical, 8)
             .padding(.horizontal, 14)
