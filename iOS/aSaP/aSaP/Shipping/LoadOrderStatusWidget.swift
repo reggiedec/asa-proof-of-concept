@@ -63,12 +63,13 @@ struct LoadOrderStatusWidget: WidgetProtocol {
     let name: String = "Load and Order Status"
     var isFavorite: Bool = false
     var statuses: [LOSDetails]
+    private let contentHeight: CGFloat = 60
     
     private func LOSItem(for item: LOSDetails) -> some View {
         let (pillText, pillBackground) = item.pillColors()
         
         return HStack {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(item.title)
                     .foregroundStyle(.charcoalBlack)
                     .font(.headingThree)
@@ -81,15 +82,20 @@ struct LoadOrderStatusWidget: WidgetProtocol {
                     Text("\(item.weight, specifier: "%.2f") Tons")
                         .foregroundStyle(.greyText)
                         .font(.thinSubheader)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     Text("\(item.shipments) Shipments")
                         .foregroundStyle(.greyText)
                         .font(.thinSubheader)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     Text("\(item.orders) Orders")
                         .foregroundStyle(.greyText)
                         .font(.thinSubheader)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+            
             Spacer()
+            
             VStack(alignment: .trailing) {
                 Text(item.status.rawText)
                     .foregroundStyle(pillText)
@@ -100,7 +106,9 @@ struct LoadOrderStatusWidget: WidgetProtocol {
                         Capsule()
                             .foregroundStyle(pillBackground)
                     }
+                
                 Spacer()
+                
                 Text(item.date)
                     .font(.subHeader)
                     .foregroundStyle(.greyText)
@@ -109,7 +117,9 @@ struct LoadOrderStatusWidget: WidgetProtocol {
         }
         .padding(.horizontal, 0)
         .padding(.vertical, 12)
-        .frame(maxWidth: .infinity, maxHeight: 85,alignment: .center)
+        .frame(maxWidth: .infinity)
+        .frame(height: contentHeight)
+        
     }
     
     var body: some View {
