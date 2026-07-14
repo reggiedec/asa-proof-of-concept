@@ -46,6 +46,7 @@ class AppState {
         static let financialTestThr = UUID(uuidString: "543721F1-578D-4B83-A5E6-B7C21FDC2CAF")!
         static let estimatesWidget = UUID(uuidString: "B94BBD2D-D458-49AE-8E96-D8A1B76E7A58")!
         static let financialDetailsWidget = UUID(uuidString: "33744243-1D55-46CC-AC7A-30F6A33F4AA9")!
+        static let loadOrderStatusWidget = UUID(uuidString: "CC1F5870-9BD7-414E-9A45-024A39EE2271")!
         
     }
     /// Local store for widget layout preferences.
@@ -164,13 +165,21 @@ class AppState {
                         id: WidgetIDs.shippingOverview,
                         name: "Shipping Overview",
                         metrics: shippingOverviewMetrics()
-                    )
+                    ),
+                    LoadOrderStatusWidget(id: WidgetIDs.loadOrderStatusWidget, statuses: [
+                        LOSDetails(title: "Load 1", location: "Warehouse A", weight: 1200, shipments: 5, orders: 10, date: "6/29/26", status: .delayed),
+                        LOSDetails(title: "Load 2", location: "Warehouse B", weight: 800, shipments: 3, orders: 7, date: "6/39/26", status: .pending),
+                        LOSDetails(title: "Load 3", location: "Warehouse C", weight: 1500, shipments: 6, orders: 12, date: "ETA 12:55 pm", status: .loading),
+                        LOSDetails(title: "Load 4", location: "Warehouse D", weight: 1000, shipments: 4, orders: 8, date: "ETA 1:35 pm", status: .transit),
+                        LOSDetails(title: "Load 5", location: "Warehouse E", weight: 900, shipments: 2, orders: 5, date: "5/20/26", status: .delivered)
+                    ])
                 ]),
                 AppVariables.PageKeys.fin : .init(items: [
                     FinancialSummaryWidget(id: WidgetIDs.financialDetailsWidget, information: [
-                        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .positive, colorScheme: .positive)),
-                        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .negative, colorScheme: .negative)),
-                        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .neutral, colorScheme: .neutral))
+                        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .positive, colorScheme: .positive), types: [.againg, .ratios]),
+                        .init(title: "Net Revenue", subtitle: "-1.3% vs last quarter", pillInformation: .init(textInformation: "$120K", pillState: .negative, colorScheme: .negative), types: [.p_l, .againg]),
+                        .init(title: "Debt Ratio", subtitle: "Stable", pillInformation: .init(textInformation: "1.2", pillState: .neutral, colorScheme: .neutral), types: [.ratios, .p_l]),
+                        .init(title: "Operating Income", subtitle: "+5% YTD", pillInformation: .init(textInformation: "$50K", pillState: .positive, colorScheme: .positive), types: [.againg, .ratios])
                     ]),
                     OverviewWidget(
                         id: WidgetIDs.financialOverview,

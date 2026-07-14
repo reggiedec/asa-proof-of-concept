@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum FinancialSummaryType: Int, CaseIterable {
+enum FinancialSummaryType: Int, CaseIterable  {
     case ratios = 0
     case againg = 1
     case p_l = 2
@@ -27,6 +27,7 @@ struct FinSummaryInformation: Identifiable {
     var title: String
     var subtitle: String
     var pillInformation: FinSumPill
+    let types: [FinancialSummaryType]
 }
 
 struct FinSumPill {
@@ -76,16 +77,10 @@ struct FinSumPill {
     }
 }
 
-struct FinancialSummaryWidget: WidgetProtocol, View {
-    static func == (lhs: FinancialSummaryWidget, rhs: FinancialSummaryWidget) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    @State var selection: Int = 1 // TODO: Figure out how to get this to actually function
-    
-    let id: UUID
-    let name: String = ""
-    var isFavorite: Bool = false
+
+/// Used because rendering WidgetProtocol does not allow for states, even doing View + WidgetProtocol does not work due to how the body is rendered (called rather than implicit). This allows for states to work
+private struct FinSumWrapper: View {
+    @State var selection: Int = 0
     private(set) var information: [FinSummaryInformation]
     let blueFill = LinearGradient(
         colors: [
@@ -130,42 +125,18 @@ struct FinancialSummaryWidget: WidgetProtocol, View {
     
     var body: some View {
         VStack {
-            HStack(spacing: 4) {
-                ForEach(0..<FinancialSummaryType.all.count, id: \.self) { idx in
-                    let tab = FinancialSummaryType.all[idx]
-                    let labelColor = selection == idx ? Color.white : Color.black
-                    let backgroundView = selection == idx ? AnyView(Capsule().fill(blueFill)) : AnyView(EmptyView())
-                    
-                    Button {
-                        selection = idx
-                    } label: {
-                        Text(tab.title)
-                            .font(.headingThree)
-                            .foregroundStyle(labelColor)
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 0)
-                            .frame(maxWidth: .infinity)
-                            .contentShape(Capsule())
-                            .background {
-                                backgroundView
-                            }
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(4)
-            .background {
-                Capsule()
-                    .fill(.backgroundBlack)
-            }
+            
+            Selector(selection: $selection, enums: FinancialSummaryType.all, label: \.title)
             
             ScrollView {
-                ForEach(Array(information.enumerated()), id: \.element.id) { index, info in
-                    detailItem(info: info)
-                    
-                    if index < information.count - 1 {
-                        Divider()
-                    }
+                let selectedType = FinancialSummaryType.all[selection]
+                
+                ForEach(Array(information.enumerated()).filter { $0.element.types.contains(selectedType) }, id: \.element.id) { index, info in
+                        detailItem(info: info)
+                        
+                        if index < information.count - 1 {
+                            Divider()
+                        }
                 }
             }
             .padding(.leading, AppVariables.widgetVariables.leadingPadding)
@@ -175,10 +146,26 @@ struct FinancialSummaryWidget: WidgetProtocol, View {
     }
 }
 
+struct FinancialSummaryWidget: WidgetProtocol {
+    static func == (lhs: FinancialSummaryWidget, rhs: FinancialSummaryWidget) -> Bool {
+        lhs.id == rhs.id
+    }
+    let id: UUID
+    let name: String = "Financial Summary"
+    var isFavorite: Bool = false
+    private(set) var information: [FinSummaryInformation]
+   
+    
+    var body: some View {
+        FinSumWrapper(information: information)
+    }
+}
+
 #Preview {
     FinancialSummaryWidget(id: UUID(), information: [
-        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .positive, colorScheme: .positive)),
-        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .negative, colorScheme: .negative)),
-        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .neutral, colorScheme: .neutral))
-    ]).body
+        .init(title: "Gross Margin", subtitle: "+2.1pts vs last month", pillInformation: .init(textInformation: "40%", pillState: .positive, colorScheme: .positive), types: [.againg]),
+        .init(title: "Net Revenue", subtitle: "-1.3% vs last quarter", pillInformation: .init(textInformation: "$120K", pillState: .negative, colorScheme: .negative), types: [.p_l, .againg]),
+        .init(title: "Debt Ratio", subtitle: "Stable", pillInformation: .init(textInformation: "1.2", pillState: .neutral, colorScheme: .neutral), types: [.ratios]),
+        .init(title: "Operating Income", subtitle: "+5% YTD", pillInformation: .init(textInformation: "$50K", pillState: .positive, colorScheme: .positive), types: [.p_l])
+    ]).body 
 }
