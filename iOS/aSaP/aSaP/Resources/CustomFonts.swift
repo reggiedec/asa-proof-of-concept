@@ -51,4 +51,6 @@ extension Font {
     static let tinyPillText:Font = .beVietnam(.semiBold, size: 14)
     static let progressBarDescriptionText:Font = .beVietnam(.regular, size: 16)
     static let regularFourteen:Font = .beVietnam(.regular, size: 14)
+    static let boldeighteen:Font = .beVietnam(.bold, size: 18)
+    static let boldfourteen:Font = .beVietnam(.bold, size: 14)
 }

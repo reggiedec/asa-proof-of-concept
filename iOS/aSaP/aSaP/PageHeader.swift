@@ -7,24 +7,31 @@
 
 import SwiftUI
 
-struct PageHeader: View {
-    let title: String
+struct PageHeader<LeadingContent: View>: View {
     let selectedLocationCount: Int
     let onLocationTap: () -> Void
     let onNotificationsTap: () -> Void
+    let leadingContent: LeadingContent
 
     private let horizontalPadding: CGFloat = 28
     private let topPadding: CGFloat = 24
     private let bottomPadding: CGFloat = 16
-    private let titleColor = Color(red: 0.07, green: 0.09, blue: 0.15)
+
+    init(
+        selectedLocationCount: Int,
+        onLocationTap: @escaping () -> Void,
+        onNotificationsTap: @escaping () -> Void,
+        @ViewBuilder leadingContent: () -> LeadingContent
+    ) {
+        self.selectedLocationCount = selectedLocationCount
+        self.onLocationTap = onLocationTap
+        self.onNotificationsTap = onNotificationsTap
+        self.leadingContent = leadingContent()
+    }
 
     var body: some View {
         HStack(alignment: .center) {
-            Text(title)
-                .font(Font.custom("BeVietnamPro-Bold", size: 22))
-                .foregroundStyle(titleColor)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
+            leadingContent
 
             Spacer()
 
@@ -42,6 +49,59 @@ struct PageHeader: View {
     }
 }
 
+struct UserAvatarBubble: View {
+    let initials: String
+
+    var body: some View {
+        Text(initials)
+            .font(Font.custom("BeVietnamPro-Bold", size: 11))
+            .foregroundStyle(.white)
+            .frame(width: 32, height: 32)
+            .background {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color("BlueGradient").opacity(0.7),
+                                Color("BlueGradient")
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+            }
+            .accessibilityLabel("User profile")
+    }
+}
+
+struct PageHeaderTitle: View {
+    let title: String
+
+    var body: some View {
+        Text(title)
+            .font(Font.custom("BeVietnamPro-Bold", size: 22))
+            .foregroundStyle(Color("CharcoalBlack"))
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
+    }
+}
+
+private struct PageHeaderPreview: View {
+    var body: some View {
+        PageHeader(
+            selectedLocationCount: 6,
+            onLocationTap: {},
+            onNotificationsTap: {}
+        ) {
+            UserAvatarBubble(initials: "JD")
+        }
+    }
+}
+
+#Preview {
+    PageHeaderPreview()
+}
+
 private struct PageHeaderControls: View {
     let selectedLocationCount: Int
     let onLocationTap: () -> Void
@@ -51,7 +111,6 @@ private struct PageHeaderControls: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Spacer()
             locationsButton
             notificationsButton
         }
@@ -65,7 +124,7 @@ private struct PageHeaderControls: View {
                     .foregroundStyle(Color("BlueGradient"))
 
                 Text("\(selectedLocationCount) Locations")
-                    .font(.subHeader)
+                    .font(Font.custom("BeVietnamPro-Medium", size: 11))
                     .foregroundStyle(Color("CharcoalBlack"))
 
                 Image(systemName: "chevron.down")
