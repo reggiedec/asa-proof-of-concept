@@ -7,6 +7,154 @@
 
 import SwiftUI
 
+struct FabDetailWrapper: View {
+    @State var selection: Int = 0
+    var jobDetails: [FabDetail]
+    
+    private var selectedJobType: JobType {
+        JobType.all[selection]
+    }
+    
+    private func totalAmount(for item: FabDetail) -> Double {
+        item.subItems.reduce(0) { $0 + $1.amount }
+    }
+    
+    private func subItemPercentages(for item: FabDetail, total: Double) -> (Double, Double, Double) {
+        let openAmount = item.subItems.first(where: { $0.jobType == .open })?.amount ?? 0
+        let fabAmount = item.subItems.first(where: { $0.jobType == .fabricated })?.amount ?? 0
+        let shipAmount = item.subItems.first(where: { $0.jobType == .shipped })?.amount ?? 0
+        
+        return (openAmount / total, fabAmount / total, shipAmount / total)
+    }
+    
+    private func detailItem(for item: FabDetail, jobType: JobType) -> some View {
+        let subItem = item.subItems.first { $0.jobType == jobType }
+        let amount = totalAmount(for: item)
+        let (openRatio, fabRatio, shipRatio) = subItemPercentages(for: item, total: amount) // remaining always takes up remaining space
+        let barRadius: CGFloat = 32
+        let barHeight: CGFloat = 16
+        let blueGradient = LinearGradient(
+            colors: [
+                .blueGradient.opacity(0.7),
+                .blueGradient,
+                .blueGradient
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        let greenGradient = LinearGradient(
+            colors: [
+                .gradientGreenStart,
+                .gradientGreenEnd,
+                .gradientGreenEnd
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        let grayGradient = LinearGradient(
+            colors: [
+                .charcoalBlack.opacity(0.7),
+                .charcoalBlack,
+                .charcoalBlack
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        let fakeGradient = LinearGradient(
+            colors: [
+                .grayBars,
+                .grayBars,
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        
+        return VStack(alignment: .leading) {
+            HStack {
+                Text(item.name)
+                    .font(.bigBoldDetail)
+                    .padding(.bottom, 2)
+                Spacer()
+                Text("Due \(item.dueDate)")
+                    .font(.semiBoldSubheader)
+            }
+            VStack(alignment: .leading) {
+                Text(item.location)
+                    .font(.progressBarInfo)
+                Text(item.company)
+                    .font(.thinSubheader)
+                    .foregroundStyle(.greyText)
+            }
+            
+            // Bar
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    // Remaining
+                    GenericBar(cornerRadius: barRadius, barFill: jobType == JobType.remaining ? grayGradient : fakeGradient, barHeight: barHeight, fillRatio: geo.size.width)
+                        .frame(height: barHeight) // some reason this helps fix sizing issues?
+                        .overlay {
+                            HStack(spacing: 12) {
+                                ForEach(0..<20) {_ in
+                                    Rectangle()
+                                        .fill(jobType == JobType.remaining ? .white.opacity(0.3) : .clear)
+                                        .frame(width: 10, height: barHeight + 2) // added height to fix gap at top and bottom
+                                        .rotationEffect(.degrees(15))
+                                }
+                            }
+                            .frame(width: geo.size.width)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                        }
+                    // shipped
+                    GenericBar(cornerRadius: barRadius, barFill: jobType == JobType.shipped ? greenGradient : fakeGradient, barHeight: barHeight, fillRatio: (geo.size.width * openRatio) + (geo.size.width * fabRatio) + (geo.size.width * shipRatio))
+                        .frame(height: barHeight)
+                    // fabricated
+                    GenericBar(cornerRadius: barRadius, barFill: jobType == JobType.fabricated ? blueGradient : fakeGradient, barHeight: barHeight, fillRatio: (geo.size.width * openRatio) + (geo.size.width * fabRatio))
+                        .frame(height: barHeight)
+                    // Open
+                    GenericBar(cornerRadius: barRadius, barFill: jobType == JobType.open ? grayGradient : fakeGradient, barHeight: barHeight, fillRatio: geo.size.width * openRatio)
+                        .frame(height: barHeight)
+                }
+            }
+            .padding(.bottom, 12)
+            
+            // Weights
+            HStack {
+                VStack(alignment: .leading) {
+                    if let subItem {
+                        Text(subItem.jobType.title.uppercased())
+                            .font(.semiBoldSubheader)
+                            .foregroundStyle(.greyText)
+                        Text(subItem.amount, format: .number.precision(.fractionLength(2)))
+                            .font(.progressBarInfo)
+                    }
+                }
+                Spacer()
+                VStack(alignment: .trailing) {
+                    Text("TOTAL")
+                        .font(.semiBoldSubheader)
+                        .foregroundStyle(.greyText)
+                    Text(amount, format: .number.precision(.fractionLength(2)))
+                        .font(.progressBarInfo)
+                    
+                }
+            }
+        }
+    }
+    
+    var body: some View {
+        VStack {
+            Selector(selection: $selection, enums: JobType.all, label: \.title, fontSize: .toggleTex)
+            
+            ScrollView {
+                ForEach(Array(jobDetails.enumerated()).filter { $0.element.subItems.contains(where: { $0.jobType == selectedJobType }) }, id: \.element.id) { index, job in
+                    detailItem(for: job, jobType: selectedJobType)
+                }
+            }
+            .padding(.leading, AppVariables.widgetVariables.leadingPadding)
+        }
+    }
+}
+
 struct FabDetailsWidget: WidgetProtocol {
     static func == (lhs: FabDetailsWidget, rhs: FabDetailsWidget) -> Bool {
         lhs.id == rhs.id
@@ -15,170 +163,21 @@ struct FabDetailsWidget: WidgetProtocol {
     let id: UUID
     let name: String = "Fabrication Details"
     var isFavorite: Bool = false
-    var jobDetails: [JobDetail]
-    private let formatter = DateFormatter()
-    
-    init(id: UUID, jobDetails: [JobDetail]) {
-        self.id = id
-        self.jobDetails = jobDetails
-        formatter.locale = .current
-        formatter.dateFormat = "MMM dd"
-    }
-    
-    private func statusPill(for jobDetail: JobDetail) -> some View {
-        return Group {
-                if let icon = jobDetail.status.pillIcon {
-                    HStack {
-                        icon
-                        Text(jobDetail.status.pillDescription)
-                    }
-                } else {
-                    Text(jobDetail.status.pillDescription)
-                }
-            }
-            .font(.progressTiny)
-            .foregroundStyle(jobDetail.status.pillTextColor)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 14)
-            .background {
-                RoundedRectangle(cornerRadius: 100)
-                    .fill(jobDetail.status.pillBackgroundColor)
-            }
-    }
-    
-    private func individualJobDetail(for jobDetail: JobDetail) -> some View {
-        let barCornerRadius: CGFloat = 100
-        let barMaxHeight: CGFloat = 12
-        let percetComplete = jobDetail.ordersTotal == 0 ? 0 : (Double(jobDetail.ordersCompleted) / Double(jobDetail.ordersTotal)) * 100
-        
-        return VStack {
-            // item header
-            HStack {
-                Text(jobDetail.name)
-                    .font(.bigBoldDetail)
-                    .frame(alignment: .leading)
+    var jobDetails: [FabDetail]
 
-                Spacer()
-                statusPill(for: jobDetail)
-            }
-            // Company details, date
-            HStack(alignment: .center) {
-                VStack (alignment: .leading){ // Looks really off.
-                    Text(jobDetail.location)
-                        .font(.semiBoldSubheader) // Made it larger to hopefully help sizing issues
-                        .lineLimit(1)
-
-                    Text(jobDetail.company)
-                        .font(.thinSubheader)
-                        .lineLimit(1)
-                }
-                Spacer()
-                Text("Due \(jobDetail.dueDate)")
-                    .font(.semiBoldSubheader)
-                    .padding(.trailing, 10)
-            }
-            // progress bar
-            HStack{
-                GeometryReader { geo in
-                    let barSize = max(0, geo.size.width - 10)
-                    
-                    ZStack(alignment: .leading) {
-                        GenericBar(
-                            cornerRadius: barCornerRadius,
-                            barFill: .grayBars,
-                            barHeight: barMaxHeight,
-                            fillRatio: barSize  // is all remaining space - padding
-                        )
-                        
-                        GenericBar(
-                            cornerRadius: barCornerRadius,
-                            barFill: jobDetail.status.barGradientColor,
-                            barHeight: barMaxHeight,
-                            fillRatio: barSize * (percetComplete / 100)
-                        )
-                    }
-
-                }
-                Spacer()
-                Text("\(percetComplete, specifier: "%.0f")%")
-                    .font(.progressTiny)
-            }
-            // Specific details
-            HStack {
-                Text("\(jobDetail.ordersCompleted)/\(jobDetail.ordersTotal) orders")
-                    .font(.progressBarInfo)
-                Spacer()
-                Text("\(jobDetail.amountCompleted, specifier: "%.1f")/\(jobDetail.amountTotal, specifier: "%.1f") T")
-                    .font(.progressBarInfo)
-            }
-        }
-    }
-    
+   
     var body: some View {
-        let sortedJobs = jobDetails.sorted { lhs, rhs in
-            lhs.status < rhs.status
-        }
-        return ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(Array(sortedJobs.enumerated()), id: \.element.id) { index, job in
-                    individualJobDetail(for: job)
-                        .padding(.vertical, 8)
-                    
-                    if (index < sortedJobs.count - 1) {
-                            Divider()
-                    }
-                }
-            }
-        }
-        .padding(.leading, AppVariables.widgetVariables.leadingPadding)
+        FabDetailWrapper(jobDetails: jobDetails)
     }
 }
 
 #Preview {
     FabDetailsWidget(id: UUID(), jobDetails: [
-        JobDetail(
-            name: "J-2245",
-            status: .atRisk,
-            dueDate: "Jun 14",
-            location: "Middletown Parking GarageSmal",
-            company: "Valley Structures",
-            amountCompleted: 34.2,
-            amountTotal: 84.2,
-            ordersCompleted: 9,
-            ordersTotal: 22
-        ),
-        JobDetail(
-            name: "J-2233",
-            status: .onTrack,
-            dueDate: "Jun 12",
-            location: "Small",
-            company: "Really long smaller text to see contrast",
-            amountCompleted: 30.0,
-            amountTotal: 60.0,
-            ordersCompleted: 15,
-            ordersTotal: 30
-        ),
-        JobDetail(
-            name: "J-2241",
-            status: .scheduled,
-            dueDate: "Jun 19",
-            location: "Really long main text to check length amount",
-            company: "Checking how overflow looks on the smaller bottom bar",
-            amountCompleted: 0.0,
-            amountTotal: 40.0,
-            ordersCompleted: 0,
-            ordersTotal: 10
-        ),
-        JobDetail(
-            name: "J-2251",
-            status: .completed,
-            dueDate: "Jun 07",
-            location: "Longer Main Text but not too long",
-            company: "small",
-            amountCompleted: 100.0,
-            amountTotal: 100.0,
-            ordersCompleted: 25,
-            ordersTotal: 25
-        )
+        .init(name: "J-2241", dueDate: "Jun 12", location: "Riverfront Tower - Pkg A", company: "Cornerstone Builders", subItems: [
+            .init(amount: 68_400, jobType: .open),
+            .init(amount: 10_000, jobType: .fabricated),
+            .init(amount: 20_000, jobType: .shipped),
+            .init(amount: 60_000, jobType: .remaining)
+        ])
     ]).body
 }

@@ -149,15 +149,12 @@ class AppState {
                         metrics: fabricationOverviewMetrics()
                     ),
                     FabDetailsWidget(id: WidgetIDs.fabDetailsWidget, jobDetails: [
-                        JobDetail(name: "J-2245", status: .atRisk,
-                            dueDate: "Jun 12", location: "Middletown Parking Garage", company: "Valley Structures", amountCompleted: 34.2, amountTotal: 84.2, ordersCompleted: 9, ordersTotal: 22
-                        ),
-                        JobDetail(name: "J-2233", status: .onTrack, dueDate: "Jun 12", location: "Small", company: "Really long smaller text to see contrast", amountCompleted: 30.0, amountTotal: 60.0, ordersCompleted: 15, ordersTotal: 30
-                        ),
-                        JobDetail(name: "J-2241", status: .scheduled, dueDate: "Jun 19", location: "Really long main text to check length amount", company: "Checking how overflow looks on the smaller bottom bar", amountCompleted: 0.0, amountTotal: 40.0, ordersCompleted: 0, ordersTotal: 10
-                        ),
-                        JobDetail(name: "J-2251", status: .completed, dueDate: "Jun 07", location: "Longer Main Text but not too long", company: "small", amountCompleted: 100.0, amountTotal: 100.0, ordersCompleted: 25, ordersTotal: 25
-                        )
+                        .init(name: "J-2241", dueDate: "Jun 12", location: "Riverfront Tower - Pkg A", company: "Cornerstone Builders", subItems: [
+                            .init(amount: 68_400, jobType: .open),
+                            .init(amount: 10_000, jobType: .fabricated),
+                            .init(amount: 20_000, jobType: .shipped),
+                            .init(amount: 60_000, jobType: .remaining)
+                        ])
                     ])
                 ]),
                 AppVariables.PageKeys.ship : .init(items: [
