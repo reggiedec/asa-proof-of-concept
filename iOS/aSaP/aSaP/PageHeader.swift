@@ -111,6 +111,7 @@ private struct PageHeaderControls: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            Spacer()
             locationsButton
             notificationsButton
         }
