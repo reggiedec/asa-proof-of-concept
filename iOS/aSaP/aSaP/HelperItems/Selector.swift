@@ -42,7 +42,7 @@ struct Selector<T: CaseIterable & RawRepresentable & Equatable>: View where T.Ra
                 let backgroundView = isSelected ? AnyView(
                     Capsule()
                         .fill(blueFill)
-                        .frame(width: .infinity)
+                        .frame(maxWidth: .infinity)
                 ) : AnyView(EmptyView())
 
                 Button {
