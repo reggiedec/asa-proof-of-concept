@@ -72,6 +72,10 @@ struct ContentView: View {
             }
             .tag(4)
         }
+        .toolbar(.hidden, for: .tabBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            BottomNav(selectedTab: $selectedTab)
+        }
         .sheet(isPresented: $showNotifications) {
             BasicNotificationsView(showNotifications: $showNotifications)
                 .presentationDragIndicator(.visible)
