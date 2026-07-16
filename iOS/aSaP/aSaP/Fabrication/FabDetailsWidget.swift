@@ -36,7 +36,7 @@ struct FabDetailsWidget: WidgetProtocol {
                     Text(jobDetail.status.pillDescription)
                 }
             }
-            .font(Font.custom("BeVietnamPro-SemiBold", size: 12))
+            .font(.progressTiny)
             .foregroundStyle(jobDetail.status.pillTextColor)
             .padding(.vertical, 8)
             .padding(.horizontal, 14)
@@ -55,7 +55,7 @@ struct FabDetailsWidget: WidgetProtocol {
             // item header
             HStack {
                 Text(jobDetail.name)
-                    .font(Font.custom("BeVietnamPro-Bold", size: 20))
+                    .font(.bigBoldDetail)
                     .frame(alignment: .leading)
 
                 Spacer()
@@ -65,16 +65,16 @@ struct FabDetailsWidget: WidgetProtocol {
             HStack(alignment: .center) {
                 VStack (alignment: .leading){ // Looks really off.
                     Text(jobDetail.location)
-                        .font(Font.custom("BeVietnamPro-SemiBold", size: 14)) // Made it larger to hopefully help sizing issues
+                        .font(.semiBoldSubheader) // Made it larger to hopefully help sizing issues
                         .lineLimit(1)
 
                     Text(jobDetail.company)
-                        .font(Font.custom("BeVietnamPro-Thin", size: 12)) // Cant be 10, too small
+                        .font(.thinSubheader)
                         .lineLimit(1)
                 }
                 Spacer()
                 Text("Due \(jobDetail.dueDate)")
-                    .font(Font.custom("BeVietnamPro-SemiBold", size: 12))
+                    .font(.semiBoldSubheader)
                     .padding(.trailing, 10)
             }
             // progress bar
@@ -101,15 +101,15 @@ struct FabDetailsWidget: WidgetProtocol {
                 }
                 Spacer()
                 Text("\(percetComplete, specifier: "%.0f")%")
-                    .font(Font.custom("BeVietnamPro-SemiBold", size: 12))
+                    .font(.progressTiny)
             }
             // Specific details
             HStack {
                 Text("\(jobDetail.ordersCompleted)/\(jobDetail.ordersTotal) orders")
-                    .font(Font.custom("BeVietnamPro-Bold", size: 13))
+                    .font(.progressBarInfo)
                 Spacer()
                 Text("\(jobDetail.amountCompleted, specifier: "%.1f")/\(jobDetail.amountTotal, specifier: "%.1f") T")
-                    .font(Font.custom("BeVietnamPro-Bold", size: 13))
+                    .font(.progressBarInfo)
             }
         }
     }
@@ -120,9 +120,13 @@ struct FabDetailsWidget: WidgetProtocol {
         }
         return ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                ForEach(sortedJobs) { job in
+                ForEach(Array(sortedJobs.enumerated()), id: \.element.id) { index, job in
                     individualJobDetail(for: job)
                         .padding(.vertical, 8)
+                    
+                    if (index < sortedJobs.count - 1) {
+                            Divider()
+                    }
                 }
             }
         }

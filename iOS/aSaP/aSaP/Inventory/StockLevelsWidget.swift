@@ -25,10 +25,10 @@ struct StockLevelsWidget: WidgetProtocol {
         let (textColor, backgroundColor) = stockItem.getLevelColors()
 
         return Text(stockItem.level.description)
-            .font(Font.custom("BeVietnamPro-SemiBold", size: 12))
+            .font(.pillText)
             .foregroundStyle(textColor)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 14)
+            .padding(.vertical, 4)
+            .padding(.horizontal, 11)
             .background {
                 RoundedRectangle(cornerRadius: 100)
                     .fill(backgroundColor)
@@ -37,7 +37,7 @@ struct StockLevelsWidget: WidgetProtocol {
     
     /// Tag that states where the system designated min value is
     /// - Returns: simple view for this tag
-    private func minTag() -> some View {
+    private func minTag(stockItem: StockItem) -> some View {
         return ZStack {
             Circle()
                 .frame(width: 4)
@@ -45,9 +45,9 @@ struct StockLevelsWidget: WidgetProtocol {
                 .frame(width: 1, height: 12)
                 .padding(.top, 12)
                 .padding(.trailing, 0.5)
-            Text("Min")
-                .font(Font.custom("BeVietnamPro-SemiBold", size: 10))
-                .padding(.top, 35)
+            Text("\((String(format: "%.1f", stockItem.minimum))) Tons")
+                .font(.progressTiny)
+                .padding(.top, 40)
         }
     }
     
@@ -58,11 +58,6 @@ struct StockLevelsWidget: WidgetProtocol {
         let barSquish: CGFloat = 0
         let overflowPercentage = stockItem.calculateOverflowPercentage()
         let fillRatio = min(stockItem.quantity / stockItem.minimum, 1.0)
-        let mainWidth = {
-            let overflow = (1.0 / 3.0) * (1 + Double(overflowPercentage) / 100.0)
-            return min(1.0, overflow)
-        }
-        
         let (gradientStart, gradientEnd): (Color, Color) = {
             switch stockItem.level {
             case .warning:
@@ -74,14 +69,32 @@ struct StockLevelsWidget: WidgetProtocol {
             }
         }()
         
+        
+        /// Breaks width of the bar into thirds to then figure out how large it should be as a whole
+        /// - Parameter width: width of the bar
+        /// - Returns: Value representing total length of the item
+        func mainWidth(width: CGFloat) -> CGFloat {
+            var remainder = overflowPercentage
+            let third = width * (1.0 / 3.0)
+            var barSize: CGFloat = third
+            if overflowPercentage > 100 {
+                barSize += third
+                remainder -= 100
+            }
+            
+            barSize += (third * (CGFloat(remainder) / 100))
+            
+            return barSize
+        }
+        
         return HStack {
             RoundedRectangle(cornerRadius: 100)
                 .fill(Color("GrayBars"))
                 .padding(.vertical, barSquish) // squishes the bar
-                .containerRelativeFrame(.horizontal, count: 4, span: 3, spacing: 0)
+                .frame(maxHeight: 12)
                 .overlay {
                     GeometryReader { geo in
-                        ZStack {
+                        ZStack(alignment: .leading) {
                             // stripped
                             if overflowPercentage > 0 {
                                 GenericBar(
@@ -96,7 +109,7 @@ struct StockLevelsWidget: WidgetProtocol {
                                         endPoint: .bottom
                                     ),
                                     barHeight: 100,
-                                    fillRatio: geo.size.width * mainWidth()
+                                    fillRatio: mainWidth(width: geo.size.width)
                                 )
                                 .overlay {
                                     HStack(spacing: 12) {
@@ -107,7 +120,7 @@ struct StockLevelsWidget: WidgetProtocol {
                                                 .rotationEffect(.degrees(15))
                                         }
                                     }
-                                    .frame(width: geo.size.width * mainWidth())
+                                    .frame(width:mainWidth(width: geo.size.width))
                                     .clipShape(RoundedRectangle(cornerRadius: 20))
                                 }
                             }
@@ -131,14 +144,14 @@ struct StockLevelsWidget: WidgetProtocol {
                             }
                         }
                         .overlay {
-                            minTag()
+                            minTag(stockItem: stockItem)
                                 .padding(.trailing, geo.size.width * 0.33)
                         }
                     }
                 }
             Spacer()
             Text("\(stockItem.calculateOverflowPercentage())%")
-                .font(Font.custom("BeVietnamPro-Bold", size: 13))
+                .font(.barGraphBarText)
         }
     }
     
@@ -150,35 +163,45 @@ struct StockLevelsWidget: WidgetProtocol {
         let quantity = item.quantity
         
         return VStack {
-            HStack {
-                Text(item.name)
-                    .font(Font.custom("BeVietnamPro-Bold", size: 20))
-                Spacer()
-                overflowPill(stockItem: item)
+            VStack(alignment: .leading) {
+                HStack() {
+                    Text(item.name)
+                        .font(.bigBoldDetail)
+                        .padding(.bottom, 3)
+                    Spacer()
+                    overflowPill(stockItem: item)
+                }
+                Text(item.description)
+                    .font(.progressBarDescriptionText)
+                    .foregroundStyle(.charcoalBlack.opacity(AppVariables.widgetVariables.subHeadingOpacity))
             }
+            Spacer()
             progressBar(stockItem: item)
             HStack {
                 Spacer()
-                Text("\(String(format: "%.1f",quantity))/\(String(format: "%.1f",minimum)) Minimum Tons")
-                    .font(Font.custom("BeVietnamPro-Bold", size: 13))
+                Text("\(String(format: "%.1f",quantity))/\(String(format: "%.1f",minimum)) Tons")
+                    .font(.progressBarInfo)
             }
         }
         .padding(.leading, AppVariables.widgetVariables.leadingPadding)
     }
     
     var body: some View {
-        ForEach(stockItems) { item in
+        ForEach(Array(stockItems.enumerated()), id: \.element.id) { index, item in
             generateStockItemVisual(item: item)
-                .padding(.bottom, 20)
-                .frame(maxHeight: 100)
+                .padding(.bottom, 30)
+            
+            if (index < stockItems.count - 1) {
+                Divider()
+            }
         }
     }
 }
 
 #Preview {
     StockLevelsWidget(id: UUID(), stockItems: [
-        StockItem(name: "#8 Rebar (1\")", quantity: 80.0, minimum: 100.0),
-        StockItem(name: "#5 Rebar (5/8\")", quantity: 120.0, minimum: 100.0),
-        StockItem(name: "#4 Rebar (1/2\")", quantity: 230.0, minimum: 100.0),
+        StockItem(name: "RB0360", description: "Rebar Black #3 Grade 60", quantity: 80.0, minimum: 100.0),
+        StockItem(name: "#5 Rebar (5/8\")", description: "Rebar Black #3 Grade 60", quantity: 120.0, minimum: 100.0),
+        StockItem(name: "#4 Rebar (1/2\")", description: "Rebar Black #3 Grade 60", quantity: 230.0, minimum: 100.0),
     ]).body
 }

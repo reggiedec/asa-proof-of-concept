@@ -17,5 +17,6 @@ struct AppVariables {
     
     struct widgetVariables {
         static let leadingPadding: CGFloat = 8
+        static let subHeadingOpacity: CGFloat = 0.7
     }
 }
