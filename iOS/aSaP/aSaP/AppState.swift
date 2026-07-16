@@ -47,6 +47,7 @@ class AppState {
         static let estimatesWidget = UUID(uuidString: "B94BBD2D-D458-49AE-8E96-D8A1B76E7A58")!
         static let financialDetailsWidget = UUID(uuidString: "33744243-1D55-46CC-AC7A-30F6A33F4AA9")!
         static let loadOrderStatusWidget = UUID(uuidString: "CC1F5870-9BD7-414E-9A45-024A39EE2271")!
+        static let machineStatusWidget = UUID(uuidString: "B0FBB233-5920-42DC-B2DB-31D6667B9AFE")!
         
     }
     /// Local store for widget layout preferences.
@@ -155,6 +156,11 @@ class AppState {
                             .init(amount: 20_000, jobType: .shipped),
                             .init(amount: 60_000, jobType: .remaining)
                         ])
+                    ]),
+                    MachineStatusWidget(id: WidgetIDs.machineStatusWidget, statuses: [
+                        .init(machineCode: "CC-2045", jobName: "JOB-2241", currentTons: 3, targetTons: 10, plannedCurrent: 31, plannedTarget: 50, state: .downtime, downReason: "Nothing scheduled"),
+                        .init(machineCode: "CC-2045", jobName: "JOB-2241", currentTons: 3, targetTons: 10, plannedCurrent: 31, plannedTarget: 50, state: .error, downReason: "BLEW UP!! ITS GONE!! WHOLE THING IS GONE"),
+                        .init(machineCode: "CC-2045", jobName: "JOB-2241", currentTons: 3, targetTons: 10, plannedCurrent: 31, plannedTarget: 50, state: .active),
                     ])
                 ]),
                 AppVariables.PageKeys.ship : .init(items: [

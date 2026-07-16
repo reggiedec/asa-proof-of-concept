@@ -40,7 +40,7 @@ extension Font {
     static let pillText: Font = .beVietnam(.semiBold, size: 15)
     static let notificationBody: Font = .beVietnam(.regular, size: 10)
     static let notificationHeaderText: Font = .beVietnam(.semiBold, size: 11)
-    static let alertBodySmaller: Font = .beVietnam(.regular, size: 10)
+    static let alertBodySmaller: Font = .beVietnam(.regular, size: 12)
     static let bigNumber: Font = .beVietnam(.bold, size: 38)
     static let barGraphBarText: Font = .beVietnam(.semiBold, size: 12)
     static let barGraphTons: Font = .beVietnam(.semiBold, size: 10)
@@ -51,4 +51,5 @@ extension Font {
     static let tinyPillText:Font = .beVietnam(.semiBold, size: 14)
     static let progressBarDescriptionText:Font = .beVietnam(.regular, size: 16)
     static let regularFourteen:Font = .beVietnam(.regular, size: 14)
+    static let boldTwenty: Font = .beVietnam(.bold, size: 20)
 }
