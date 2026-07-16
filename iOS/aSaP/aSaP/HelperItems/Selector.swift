@@ -11,7 +11,15 @@ struct Selector<T: CaseIterable & RawRepresentable & Equatable>: View where T.Ra
     @Binding var selection: Int
     let enums: [T]
     let label: (T) -> String
-
+    let fontSize: Font?
+    
+    init(selection: Binding<Int>, enums: [T], label: @escaping (T) -> String, fontSize: Font? = .headingThree) {
+        self._selection = selection
+        self.enums = enums
+        self.label = label
+        self.fontSize = fontSize
+    }
+    
     private var labels: [String] {
         enums.map(label)
     }
@@ -31,13 +39,17 @@ struct Selector<T: CaseIterable & RawRepresentable & Equatable>: View where T.Ra
             ForEach(Array(labels.enumerated()), id: \.0) { idx, text in
                 let isSelected = selection == idx
                 let labelColor = isSelected ? Color.white : Color.black
-                let backgroundView = isSelected ? AnyView(Capsule().fill(blueFill)) : AnyView(EmptyView())
+                let backgroundView = isSelected ? AnyView(
+                    Capsule()
+                        .fill(blueFill)
+                        .frame(maxWidth: .infinity)
+                ) : AnyView(EmptyView())
 
                 Button {
                     selection = idx
                 } label: {
                     Text(text)
-                        .font(.headingThree)
+                        .font(fontSize)
                         .foregroundStyle(labelColor)
                         .padding(.vertical, 6)
                         .padding(.horizontal, 0)
@@ -55,3 +67,4 @@ struct Selector<T: CaseIterable & RawRepresentable & Equatable>: View where T.Ra
         }
     }
 }
+

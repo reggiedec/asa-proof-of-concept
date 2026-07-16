@@ -47,6 +47,7 @@ class AppState {
         static let estimatesWidget = UUID(uuidString: "B94BBD2D-D458-49AE-8E96-D8A1B76E7A58")!
         static let financialDetailsWidget = UUID(uuidString: "33744243-1D55-46CC-AC7A-30F6A33F4AA9")!
         static let loadOrderStatusWidget = UUID(uuidString: "CC1F5870-9BD7-414E-9A45-024A39EE2271")!
+        static let machineStatusWidget = UUID(uuidString: "B0FBB233-5920-42DC-B2DB-31D6667B9AFE")!
         
     }
     /// Local store for widget layout preferences.
@@ -149,15 +150,17 @@ class AppState {
                         metrics: fabricationOverviewMetrics()
                     ),
                     FabDetailsWidget(id: WidgetIDs.fabDetailsWidget, jobDetails: [
-                        JobDetail(name: "J-2245", status: .atRisk,
-                            dueDate: "Jun 12", location: "Middletown Parking Garage", company: "Valley Structures", amountCompleted: 34.2, amountTotal: 84.2, ordersCompleted: 9, ordersTotal: 22
-                        ),
-                        JobDetail(name: "J-2233", status: .onTrack, dueDate: "Jun 12", location: "Small", company: "Really long smaller text to see contrast", amountCompleted: 30.0, amountTotal: 60.0, ordersCompleted: 15, ordersTotal: 30
-                        ),
-                        JobDetail(name: "J-2241", status: .scheduled, dueDate: "Jun 19", location: "Really long main text to check length amount", company: "Checking how overflow looks on the smaller bottom bar", amountCompleted: 0.0, amountTotal: 40.0, ordersCompleted: 0, ordersTotal: 10
-                        ),
-                        JobDetail(name: "J-2251", status: .completed, dueDate: "Jun 07", location: "Longer Main Text but not too long", company: "small", amountCompleted: 100.0, amountTotal: 100.0, ordersCompleted: 25, ordersTotal: 25
-                        )
+                        .init(name: "J-2241", dueDate: "Jun 12", location: "Riverfront Tower - Pkg A", company: "Cornerstone Builders", subItems: [
+                            .init(amount: 68_400, jobType: .open),
+                            .init(amount: 10_000, jobType: .fabricated),
+                            .init(amount: 20_000, jobType: .shipped),
+                            .init(amount: 60_000, jobType: .remaining)
+                        ])
+                    ]),
+                    MachineStatusWidget(id: WidgetIDs.machineStatusWidget, statuses: [
+                        .init(machineCode: "Shear #1", jobName: "JOB-2241", currentTons: 3, targetTons: 10, plannedCurrent: 31, plannedTarget: 50, state: .downtime, downReason: "Nothing scheduled"),
+                        .init(machineCode: "Bender #2", jobName: "JOB-2245", currentTons: 32.9, targetTons: 100, plannedCurrent: 1450, plannedTarget: 2000, state: .error, downReason: "Broken. Waiting for replacement parts."),
+                        .init(machineCode: "Shear #2", jobName: "JOB-2228", currentTons: 13.5, targetTons: 25, plannedCurrent: 53.78, plannedTarget: 150, state: .active),
                     ])
                 ]),
                 AppVariables.PageKeys.ship : .init(items: [
