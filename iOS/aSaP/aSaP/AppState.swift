@@ -158,9 +158,9 @@ class AppState {
                         ])
                     ]),
                     MachineStatusWidget(id: WidgetIDs.machineStatusWidget, statuses: [
-                        .init(machineCode: "CC-2045", jobName: "JOB-2241", currentTons: 3, targetTons: 10, plannedCurrent: 31, plannedTarget: 50, state: .downtime, downReason: "Nothing scheduled"),
-                        .init(machineCode: "CC-2045", jobName: "JOB-2241", currentTons: 3, targetTons: 10, plannedCurrent: 31, plannedTarget: 50, state: .error, downReason: "BLEW UP!! ITS GONE!! WHOLE THING IS GONE"),
-                        .init(machineCode: "CC-2045", jobName: "JOB-2241", currentTons: 3, targetTons: 10, plannedCurrent: 31, plannedTarget: 50, state: .active),
+                        .init(machineCode: "Shear #1", jobName: "JOB-2241", currentTons: 3, targetTons: 10, plannedCurrent: 31, plannedTarget: 50, state: .downtime, downReason: "Nothing scheduled"),
+                        .init(machineCode: "Bender #2", jobName: "JOB-2245", currentTons: 32.9, targetTons: 100, plannedCurrent: 1450, plannedTarget: 2000, state: .error, downReason: "Broken. Waiting for replacement parts."),
+                        .init(machineCode: "Shear #2", jobName: "JOB-2228", currentTons: 13.5, targetTons: 25, plannedCurrent: 53.78, plannedTarget: 150, state: .active),
                     ])
                 ]),
                 AppVariables.PageKeys.ship : .init(items: [
