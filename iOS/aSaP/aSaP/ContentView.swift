@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var selectedTab = 0
     @State private var favoriteGuide: Bool = false
     @State private var showNotifications: Bool = false
+    @State private var showAccountSheet: Bool = false
     @State private var showLocationSettings: Bool = false
 
     var body: some View {
@@ -71,8 +72,14 @@ struct ContentView: View {
             }
             .tag(4)
         }
-        .sheet(isPresented: $showNotifications){
-
+        .sheet(isPresented: $showNotifications) {
+            BasicNotificationsView(showNotifications: $showNotifications)
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showAccountSheet) {
+            AccountSheet(isPresented: $showAccountSheet)
+                .presentationDetents([.height(390)])
+                .presentationDragIndicator(.automatic)
         }
         .sheet(isPresented: $showLocationSettings, onDismiss: {
             // Fetch new API data w/ new saved locations in AppState
@@ -93,7 +100,6 @@ struct ContentView: View {
             .toolbar(.hidden, for: .navigationBar)
             .safeAreaInset(edge: .top, spacing: 0) {
                 PageHeader(
-                    title: title,
                     selectedLocationCount: appState.selectedLocationIDs.count,
                     onLocationTap: {
                         showLocationSettings = true
@@ -101,8 +107,58 @@ struct ContentView: View {
                     onNotificationsTap: {
                         showNotifications = true
                     }
-                )
+                ) {
+                    if title == "Home" {
+                        Button {
+                            showAccountSheet = true
+                        } label: {
+                            UserAvatarBubble(initials: "JD")
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        PageHeaderTitle(title: title)
+                    }
+                }
             }
+    }
+}
+
+private struct BasicNotificationsView: View {
+    @Binding var showNotifications: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Notifications")
+                    .font(Font.custom("BeVietnamPro-Bold", size: 20))
+                    .foregroundStyle(Color("CharcoalBlack"))
+
+                Spacer()
+
+                Button {
+                    showNotifications = false
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color("CharcoalBlack"))
+                        .frame(width: 32, height: 32)
+                        .background {
+                            Circle()
+                                .fill(Color("BackgroundBlack"))
+                        }
+                }
+                .buttonStyle(.plain)
+            }
+
+            Text("No new notifications")
+                .font(Font.custom("BeVietnamPro-Regular", size: 14))
+                .foregroundStyle(Color("CharcoalBlack").opacity(0.72))
+
+            Spacer()
+        }
+        .padding(.horizontal, 28)
+        .padding(.top, 28)
+        .background(Color("BackgroundColor"))
     }
 }
 
