@@ -36,13 +36,15 @@ struct StockItem: Identifiable {
     private(set) var quantity: Double // Current inventory levels
     private(set) var minimum: Double // Minimum amount requested
     private(set) var level: InventoryLevel
+    private(set) var subItems: [StockItem]?
     
-    init(name: String, description: String, quantity: Double, minimum: Double) {
+    init(name: String, description: String, quantity: Double, minimum: Double, subItems: [StockItem]? = nil) {
         self.name = name
         self.description = description
         self.quantity = quantity
         self.minimum = minimum
         self.level = .warning
+        self.subItems = subItems
         
         self.level = findOverflowAmount()
     }
