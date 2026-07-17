@@ -14,8 +14,32 @@ struct ContentView: View {
     @State private var showNotifications: Bool = false
     @State private var showAccountSheet: Bool = false
     @State private var showLocationSettings: Bool = false
+    @State private var notificationVersions = AppNotification.randomizedVersions()
 
     var body: some View {
+        Group {
+            if showNotifications {
+                notificationsSurface
+            } else {
+                mainContent
+            }
+        }
+        .animation(.easeInOut(duration: 0.18), value: showNotifications)
+        .sheet(isPresented: $showAccountSheet) {
+            AccountSheet(isPresented: $showAccountSheet)
+                .presentationDetents([.height(390)])
+                .presentationDragIndicator(.automatic)
+        }
+        .sheet(isPresented: $showLocationSettings, onDismiss: {
+            // Fetch new API data w/ new saved locations in AppState
+        }) {
+            LocationSelector(locations: appState.locations, showLocations: $showLocationSettings)
+                .presentationDragIndicator(.visible)
+        }
+
+    }
+
+    private var mainContent: some View {
         TabView(selection: $selectedTab) {
             // MARK: Home
             NavigationStack {
@@ -76,22 +100,64 @@ struct ContentView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             BottomNav(selectedTab: $selectedTab)
         }
-        .sheet(isPresented: $showNotifications) {
-            BasicNotificationsView(showNotifications: $showNotifications)
-                .presentationDragIndicator(.visible)
-        }
-        .sheet(isPresented: $showAccountSheet) {
-            AccountSheet(isPresented: $showAccountSheet)
-                .presentationDetents([.height(390)])
-                .presentationDragIndicator(.automatic)
-        }
-        .sheet(isPresented: $showLocationSettings, onDismiss: {
-            // Fetch new API data w/ new saved locations in AppState
-        }) {
-            LocationSelector(locations: appState.locations, showLocations: $showLocationSettings)
-                .presentationDragIndicator(.visible)
-        }
+    }
 
+    private var notificationsSurface: some View {
+        VStack(spacing: 0) {
+            ZStack {
+                Text("Notifications")
+                    .font(.boldeighteen)
+                    .foregroundStyle(Color("CharcoalBlack"))
+
+                HStack {
+                    Button {
+                        showNotifications = false
+                    } label: {
+                        Image(systemName: "arrow.left")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color("CharcoalBlack"))
+                            .frame(width: 36, height: 36)
+                            .background {
+                                Circle()
+                                    .fill(Color("BackgroundBlack"))
+                            }
+                    }
+                    .buttonStyle(.plain)
+
+                    Spacer()
+
+                    Button {
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Color("CharcoalBlack"))
+                            .frame(width: 36, height: 36)
+                            .background {
+                                Circle()
+                                    .fill(Color("BackgroundBlack"))
+                            }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 24)
+            .padding(.bottom, 16)
+            .frame(maxWidth: .infinity)
+            .background(.white)
+
+            NotificationsView(
+                showNotifications: $showNotifications,
+                notifications: notificationVersions
+            )
+            .frame(width: 370, alignment: .topLeading)
+            .padding(.top, 18)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color("BackgroundColor").ignoresSafeArea())
+        .transition(.opacity)
     }
 
     private func pageContent<Content: View>(
@@ -105,11 +171,13 @@ struct ContentView: View {
             .safeAreaInset(edge: .top, spacing: 0) {
                 PageHeader(
                     selectedLocationCount: appState.selectedLocationIDs.count,
+                    notificationCount: notificationVersions.count,
+                    hasCriticalNotifications: notificationVersions.contains(where: \.isCritical),
                     onLocationTap: {
                         showLocationSettings = true
                     },
                     onNotificationsTap: {
-                        showNotifications = true
+                        showNotifications.toggle()
                     }
                 ) {
                     if title == "Home" {
@@ -124,45 +192,6 @@ struct ContentView: View {
                     }
                 }
             }
-    }
-}
-
-private struct BasicNotificationsView: View {
-    @Binding var showNotifications: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("Notifications")
-                    .font(Font.custom("BeVietnamPro-Bold", size: 20))
-                    .foregroundStyle(Color("CharcoalBlack"))
-
-                Spacer()
-
-                Button {
-                    showNotifications = false
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color("CharcoalBlack"))
-                        .frame(width: 32, height: 32)
-                        .background {
-                            Circle()
-                                .fill(Color("BackgroundBlack"))
-                        }
-                }
-                .buttonStyle(.plain)
-            }
-
-            Text("No new notifications")
-                .font(Font.custom("BeVietnamPro-Regular", size: 14))
-                .foregroundStyle(Color("CharcoalBlack").opacity(0.72))
-
-            Spacer()
-        }
-        .padding(.horizontal, 28)
-        .padding(.top, 28)
-        .background(Color("BackgroundColor"))
     }
 }
 

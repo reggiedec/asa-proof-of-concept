@@ -9,6 +9,8 @@ import SwiftUI
 
 struct PageHeader<LeadingContent: View>: View {
     let selectedLocationCount: Int
+    let notificationCount: Int
+    let hasCriticalNotifications: Bool
     let onLocationTap: () -> Void
     let onNotificationsTap: () -> Void
     let leadingContent: LeadingContent
@@ -19,11 +21,15 @@ struct PageHeader<LeadingContent: View>: View {
 
     init(
         selectedLocationCount: Int,
+        notificationCount: Int = 0,
+        hasCriticalNotifications: Bool = false,
         onLocationTap: @escaping () -> Void,
         onNotificationsTap: @escaping () -> Void,
         @ViewBuilder leadingContent: () -> LeadingContent
     ) {
         self.selectedLocationCount = selectedLocationCount
+        self.notificationCount = notificationCount
+        self.hasCriticalNotifications = hasCriticalNotifications
         self.onLocationTap = onLocationTap
         self.onNotificationsTap = onNotificationsTap
         self.leadingContent = leadingContent()
@@ -37,6 +43,8 @@ struct PageHeader<LeadingContent: View>: View {
 
             PageHeaderControls(
                 selectedLocationCount: selectedLocationCount,
+                notificationCount: notificationCount,
+                hasCriticalNotifications: hasCriticalNotifications,
                 onLocationTap: onLocationTap,
                 onNotificationsTap: onNotificationsTap
             )
@@ -104,10 +112,29 @@ private struct PageHeaderPreview: View {
 
 private struct PageHeaderControls: View {
     let selectedLocationCount: Int
+    let notificationCount: Int
+    let hasCriticalNotifications: Bool
     let onLocationTap: () -> Void
     let onNotificationsTap: () -> Void
 
     private let controlBackground = Color("BackgroundBlack")
+    private var notificationBadgeFill: AnyShapeStyle {
+        if hasCriticalNotifications {
+            return AnyShapeStyle(
+                LinearGradient(
+                    colors: [
+                        .gradientRedStart,
+                        .gradientRedEnd,
+                        .gradientRedEnd
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+        }
+
+        return AnyShapeStyle(Color.white)
+    }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -144,14 +171,33 @@ private struct PageHeaderControls: View {
 
     private var notificationsButton: some View {
         Button(action: onNotificationsTap) {
-            Image(systemName: "bell")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(Color("CharcoalBlack"))
-                .frame(width: 32, height: 32)
-                .background {
-                    Circle()
-                        .fill(controlBackground)
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: "bell")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color("CharcoalBlack"))
+                    .frame(width: 32, height: 32)
+                    .background {
+                        Circle()
+                            .fill(controlBackground)
+                    }
+
+                if notificationCount > 0 {
+                    Text("\(notificationCount)")
+                        .font(.barGraphTons)
+                        .foregroundStyle(hasCriticalNotifications ? .white : Color("CharcoalBlack"))
+                        .frame(minWidth: 15, minHeight: 15)
+                        .padding(.horizontal, 3)
+                        .background {
+                            Capsule()
+                                .fill(notificationBadgeFill)
+                                .overlay {
+                                    Capsule()
+                                        .stroke(Color("CharcoalBlack").opacity(0.12), lineWidth: 1)
+                                }
+                        }
+                        .offset(x: 6, y: -5)
                 }
+            }
         }
         .buttonStyle(.plain)
     }
