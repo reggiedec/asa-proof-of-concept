@@ -43,7 +43,7 @@ private func overflowPill(stockItem: StockItem) -> some View {
 /// The bar of Stock items for the stock levels widget
 /// - Parameter stockItem: item getting displayed
 /// - Returns: a visual representation of stock level for a specific item
-private func progressBar(stockItem: StockItem, barHeight: CGFloat = 12) -> some View {
+private func progressBar(stockItem: StockItem, barHeight: CGFloat = 12, rfCount: Int = 12, rfSpan: Int = 9) -> some View {
     let barSquish: CGFloat = 0
     let overflowPercentage = stockItem.calculateOverflowPercentage()
     let fillRatio = min(stockItem.quantity / stockItem.minimum, 1.0)
@@ -138,6 +138,7 @@ private func progressBar(stockItem: StockItem, barHeight: CGFloat = 12) -> some 
                     }
                 }
             }
+            .containerRelativeFrame(.horizontal, count: rfCount, span: rfSpan, spacing: 0)
         Spacer()
         Text("\(stockItem.calculateOverflowPercentage())%")
             .font(.barGraphBarText)
@@ -193,7 +194,7 @@ struct StockLevelsDrillDown: View {
             // Text Items
             HStack {
                 Text(item.name)
-                    .font(.boldfourteen)
+                    .font(.boldeighteen)
                 Spacer()
                 overflowPill(stockItem: item)
             }
@@ -206,9 +207,9 @@ struct StockLevelsDrillDown: View {
                 Text("\(item.quantity, format: .number.precision(.fractionLength(1))) Tons")
                     .font(.boldfourteen)
             }
-            .padding(.top, 4)
+            .padding(.top, 2)
             // bar
-            progressBar(stockItem: item)
+            progressBar(stockItem: item, rfCount: 7, rfSpan: 6)
             // To count
         }
         .padding(.vertical, 11)
@@ -225,10 +226,14 @@ struct StockLevelsDrillDown: View {
                 .padding(.top, 7)
             
             ScrollView {
-                ForEach(selectedStockItem.subItems ?? [], id: \.id) { item in
+                let subItems = selectedStockItem.subItems ?? []
+                ForEach(Array(subItems.enumerated()), id: \.element.id) { index, item in
                     subItem(for: item)
+                    if index < subItems.count - 1 {
+                        Divider()
+                            .padding(.top, 10)
+                    }
                 }
-                
             }
             Spacer() // push stuff to top!
         }
@@ -323,3 +328,4 @@ struct StockLevelsWidget: WidgetProtocol {
         StockItem(name: "#4 Rebar (1/2\")", description: "Rebar Black #3 Grade 60", quantity: 230.0, minimum: 100.0),
     ]).body
 }
+
